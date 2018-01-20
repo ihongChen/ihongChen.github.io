@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="推薦模型," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="推薦模型簡介前言(通常–&amp;gt;廢話)早餐去買三明治的時候，老闆娘總會好心的問說，要不要來杯紅茶。通常看在老闆娘的顏值誠意上，都會不爭氣的買了…推薦是針對原本客戶沒有預期到的結果，額外的跨售商品，或提示給用戶可能感興趣（喜歡）的東西（例如:買早餐時原本不會口渴，受到老闆娘的顏值影響才加購飲料的。） 推薦方法火熱了這麼多年是因為在商業上有很實際的目的：  促進交易 加速決策  簡單來說對商家來說，就">
+<meta name="keywords" content="推薦模型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="推薦模型-基於鄰域算法">
+<meta property="og:url" content="http://yoursite.com/2018/01/20/rec1-knn/index.html">
+<meta property="og:site_name" content="喵喵抄人">
+<meta property="og:description" content="推薦模型簡介前言(通常–&amp;gt;廢話)早餐去買三明治的時候，老闆娘總會好心的問說，要不要來杯紅茶。通常看在老闆娘的顏值誠意上，都會不爭氣的買了…推薦是針對原本客戶沒有預期到的結果，額外的跨售商品，或提示給用戶可能感興趣（喜歡）的東西（例如:買早餐時原本不會口渴，受到老闆娘的顏值影響才加購飲料的。） 推薦方法火熱了這麼多年是因為在商業上有很實際的目的：  促進交易 加速決策  簡單來說對商家來說，就">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://yoursite.com/2018/01/20/rec1-knn/img/算法框架.png">
+<meta property="og:image" content="https://media.sketchfab.com/urls/18d38b440a9647059983c0e064b54948/dist/thumbnails/4cf3dbf1096d4d299c6181ec8f67a149/200x200.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/6234f9020abd4ac79ebcdf6e09feff38/dist/thumbnails/0779456376614b65ad57dc06d2904481/200x200.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/0ad160d8515949169e2f09e912879a20/dist/thumbnails/6e85aeecf94c4ebb90b7127b7b9e819d/200x200.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/82367f6a22644f6f88b462077611559e/dist/thumbnails/9041c2a16d43466aaf81ee145ed20d3f/200x200.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/efe433deeeba4588bc089bba71fef9a5/dist/thumbnails/8bbd97ec0c3f481787694ca8d33211c4/200x200.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/4883769e53794a4295f25e49993f04d7/dist/thumbnails/3624d44225144991ae69d7b3a63c2f54/200x200.jpeg">
+<meta property="og:image" content="http://yoursite.com/2018/01/20/rec1-knn/img/評估方法.png">
+<meta property="og:updated_time" content="2018-01-20T12:50:02.697Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="推薦模型-基於鄰域算法">
+<meta name="twitter:description" content="推薦模型簡介前言(通常–&amp;gt;廢話)早餐去買三明治的時候，老闆娘總會好心的問說，要不要來杯紅茶。通常看在老闆娘的顏值誠意上，都會不爭氣的買了…推薦是針對原本客戶沒有預期到的結果，額外的跨售商品，或提示給用戶可能感興趣（喜歡）的東西（例如:買早餐時原本不會口渴，受到老闆娘的顏值影響才加購飲料的。） 推薦方法火熱了這麼多年是因為在商業上有很實際的目的：  促進交易 加速決策  簡單來說對商家來說，就">
+<meta name="twitter:image" content="http://yoursite.com/2018/01/20/rec1-knn/img/算法框架.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/01/20/rec1-knn/"/>
+
+
+
+
+
+  <title>推薦模型-基於鄰域算法 | 喵喵抄人</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">喵喵抄人</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/20/rec1-knn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="喵喵抄人">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="喵喵抄人">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">推薦模型-基於鄰域算法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-01-20T18:20:05+08:00">
+                2018-01-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="推薦模型簡介"><a href="#推薦模型簡介" class="headerlink" title="推薦模型簡介"></a>推薦模型簡介</h1><h2 id="前言-通常–-gt-廢話"><a href="#前言-通常–-gt-廢話" class="headerlink" title="前言(通常–&gt;廢話)"></a>前言(通常–&gt;廢話)</h2><p>早餐去買三明治的時候，老闆娘總會好心的問說，要不要來杯紅茶。通常看在老闆娘的<del>顏值</del>誠意上，都會不爭氣的買了…推薦是針對原本客戶沒有預期到的結果，額外的跨售商品，或提示給用戶可能感興趣（喜歡）的東西（例如:買早餐時原本不會口渴，受到老闆娘的<del>顏值</del>影響才加購飲料的。）</p>
+<p>推薦方法火熱了這麼多年是因為在商業上有很實際的目的：</p>
+<ol>
+<li>促進交易</li>
+<li>加速決策</li>
+</ol>
+<p>簡單來說對商家來說，就是賺更多<code>$$</code>。對消費者來說可以從雜亂無章，一堆無用訊息裡面過濾有興趣的商品。在資訊過載的世界裡面，消費者無法一下子就能找到感興趣的東西。谷歌搜尋技法，在目的不明確的狀況下，沒辦法發揮功能。</p>
+<p>在網路時代，商家通常能夠快速的蒐集到用戶的購買/瀏覽/蒐藏紀錄，讓蒐集到的資訊，透過模型建立有機會，找到相似（相關性高）的商品來推薦（推播）。建構在模型上，消費者體驗的整體流程可以稱之為系統，系統面結合的範圍較大不在本文討論範圍（系統架構面本人也不懂，只懂簡單的幾種模型）。這一系列的文章，希望能紀錄自己對幾種熱門模型的理解。</p>
+<p>一般來說（就喵喵所知）有以下的算法框架</p>
+<hr>
+<h2 id="算法框架"><a href="#算法框架" class="headerlink" title="算法框架"></a>算法框架</h2><ul>
+<li>協同過濾法(Collaborative Filtering)<ul>
+<li>相似度（最鄰近法-KNN)<ul>
+<li>ubcf, ibcf</li>
+</ul>
+</li>
+<li>矩陣分解(Matrix Factorization)<ul>
+<li>explict (implicit) ALS</li>
+<li>SVD, SVD++, SVDFeatures …</li>
+<li>Learning to rank (BSR,WARP…)</li>
+</ul>
+</li>
+<li>深度學習<ul>
+<li>DNN</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>以內容最基礎(Content-based)</li>
+</ul>
+<img src="/2018/01/20/rec1-knn/img/算法框架.png">
+<hr>
+<h1 id="最鄰近法-相似度"><a href="#最鄰近法-相似度" class="headerlink" title="最鄰近法(相似度)"></a>最鄰近法(相似度)</h1><p>協同過濾法簡單說，就是透過群體的交易行為來推算，小王購買A,B,C的可能機會。透過群體關係，來推論誰和你最像(購買歷程相近)…最大的特色是，不需要對商品/領域有專業知識即能有相當的準確度。其中<strong>最鄰近法</strong>(KNN- K nearest neighbor)以考慮最相鄰的N人(物品)來計算，不算是一種<strong>模型</strong>，只是一種群眾給出的統計結果。沒有模型常見的訓練過程:</p>
+<blockquote>
+<ol>
+<li>定義cost function,</li>
+<li>求得最佳參數</li>
+<li><del>評估模型結果</del></li>
+</ol>
+</blockquote>
+<h2 id="範例一"><a href="#範例一" class="headerlink" title="範例一"></a>範例一</h2><p>如果有交易紀錄形成的資料如下，</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>趙</th>
+<th>錢</th>
+<th>孫</th>
+<th>李</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>牙刷</td>
+<td>null</td>
+<td>V</td>
+<td>null</td>
+<td>V</td>
+</tr>
+<tr>
+<td>牙膏</td>
+<td>null</td>
+<td>V</td>
+<td>null</td>
+<td>null</td>
+</tr>
+<tr>
+<td>腳踏車</td>
+<td>null</td>
+<td>null</td>
+<td>V</td>
+<td>V</td>
+</tr>
+<tr>
+<td>LED燈</td>
+<td>V</td>
+<td>null</td>
+<td>null</td>
+<td>V</td>
+</tr>
+<tr>
+<td>澡盆</td>
+<td>V</td>
+<td>V</td>
+<td>null</td>
+<td>V</td>
+</tr>
+</tbody>
+</table>
+<p>以商品的角度來看，牙刷的交易紀錄<code>(0,1,0,1)</code>形成一組向量，計算與牙膏的相似度<code>(0,1,0,0)</code>。以此能建構所有商品的相似度表格</p>
+
+$$
+cos(\theta) = \frac{r_{牙膏} \cdot r_{牙刷}'}{\lVert{r_{牙膏}}\lVert \lVert r_{牙刷}' \lVert}
+$$
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">similarity</span><span class="params">(rating,kind=<span class="string">'ubcf'</span>,eps=<span class="number">1e-9</span>)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> kind ==<span class="string">'ubcf'</span>:</span><br><span class="line">        sim = np.dot(rating,rating.T) + eps</span><br><span class="line">    <span class="keyword">if</span> kind ==<span class="string">'ibcf'</span>:</span><br><span class="line">        sim = np.dot(rating.T,rating) + eps</span><br><span class="line">    norms = np.array([np.sqrt(np.diagonal(sim))])</span><br><span class="line">    <span class="keyword">return</span> sim/norms/norms.T</span><br><span class="line"></span><br><span class="line">rating_t = np.array([</span><br><span class="line">    [<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>],</span><br><span class="line">    [<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>],</span><br><span class="line">    [<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">    [<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>],</span><br><span class="line">    [<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">1</span>]</span><br><span class="line">  ])</span><br><span class="line">rating = rating_t.T</span><br><span class="line">sim_i = similarity(rating,kind=<span class="string">'ibcf'</span>)</span><br><span class="line">sim_i.astype(np.float16)</span><br></pre></td></tr></table></figure>
+<p>有相似度矩陣後，就能針對每個用戶還沒買的商品作預測。<br>
+$$
+\hat{r_{ui}} = \sum_{u'}Sim(u,u') \cdot r_{u'i}
+$$
+or 
+$$
+\hat{r_{ui}} = \sum_{i'} r_{ui'} \cdot Sim(i,i')
+$$
+</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">score_ibcf = rating.dot(sim_i).astype(np.float16)</span><br></pre></td></tr></table></figure>
+<p>以物品為基礎</p>
+<pre><code>- 牙膏澡盆相似度最高(0.816),牙膏牙刷相似度次高(0.7)
+- 推薦孫：牙刷(0.5), LED燈(0.5) 已買腳踏車
+</code></pre><hr>
+<h2 id="範例二-推薦實例Sketchfab-Demo"><a href="#範例二-推薦實例Sketchfab-Demo" class="headerlink" title="範例二: 推薦實例Sketchfab Demo"></a>範例二: 推薦實例Sketchfab Demo</h2><p>喵喵學習推薦系算法，除了阿撒不魯的網站論文看了一堆，後來咀嚼思考後，覺得大概有87%的想法，源碼精神是來自於<a href="http://blog.ethanrosenthal.com/" target="_blank" rel="noopener">DataPique</a>大大的網站（其他的可謂<del>垃圾?</del>超越小弟<del>腦弱</del>的理解)，這個大大除了把最重要的幾種模型詳細推導一遍，更有趣的是作者更自己爬了3DCAD的資料，蒐集第一手的客戶資料情況。真正公司會在網站後蒐集到的資料，通常都是客戶的隱式行為…(所以用這組資料來練習是最好不過的!)</p>
+<p>隱性資料(implicit data)是大部分人會在瀏覽網站的狀況，</p>
+<ol>
+<li>好棒棒的點讚，</li>
+<li>覺得很爛/很腦殘<del>智缺</del>/沒興趣，通常是不會有反應的（空值）。</li>
+</ol>
+<p>對真實世界來講，通常沒有好棒棒的評分資料，給你好棒棒的評分（像是啥鬼<code>MovieLens</code>影評資料…)。老實說我在聽<code>mixerbox</code>,<code>spotify</code>,<code>netflix</code>不好聽(看)就下一首(片)或關掉了。只有聽到好棒棒的影視/音樂，才會點讚讚。</p>
+<p>之後會模仿DataPique的作法，在這個<a href="https://github.com/ihongChen/PlayRecommendSystem/tree/master/rec-a-sketch" target="_blank" rel="noopener">資料</a>上利用KNN來實踐一次。工人智慧看看推薦結果如何…</p>
+<h3 id="資料馬殺雞"><a href="#資料馬殺雞" class="headerlink" title="資料馬殺雞"></a>資料馬殺雞</h3><p>—最囉唆的就是資料清理了—</p>
+<ul>
+<li>資料通常很稀疏，要用<code>scipy.sparse</code>下面的稀疏矩陣來建構資料。<ul>
+<li><a href="http://www.scipy-lectures.org/advanced/scipy_sparse/index.html" target="_blank" rel="noopener">scipy lecture note</a>有教學說這咪一大堆的稀疏矩陣差異性(<del>累死寶寶</del>)。</li>
+</ul>
+</li>
+<li>馬殺雞函數放在<a href="https://github.com/ihongChen/PlayRecommendSystem/blob/master/rec_helper.py" target="_blank" rel="noopener">rec_helper.py</a>裡面</li>
+<li>模型放在<a href="https://github.com/ihongChen/PlayRecommendSystem/blob/master/KNNmodel.py" target="_blank" rel="noopener">KNNmodel.py</a>下的<code>KNNmodel</code><ul>
+<li>KNNmodel 有機會可以再重寫,目前還算堪用</li>
+</ul>
+</li>
+<li>需要安裝好用的進度長條圖<a href="https://github.com/tqdm/tqdm" target="_blank" rel="noopener">tqdm</a><blockquote>
+<p><code>!conda install tqdm</code></p>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np </span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> csv</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line">sys.path.append(<span class="string">'../'</span>)</span><br></pre></td></tr></table></figure>
+<p>自己抄抄寫寫兜的<code>function</code><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> KNNmodel <span class="keyword">import</span> * <span class="comment">## 主要knn模型</span></span><br><span class="line"><span class="keyword">from</span> rec_helper <span class="keyword">import</span> * <span class="comment">## 輔助函數</span></span><br></pre></td></tr></table></figure></p>
+<p>讀入資料<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">df = pd.read_csv(<span class="string">'../rec-a-sketch/model_likes_anon.psv'</span>,</span><br><span class="line">                 sep=<span class="string">'|'</span>,quotechar=<span class="string">'\\'</span>,quoting=csv.QUOTE_MINIMAL)</span><br><span class="line">df.head()</span><br></pre></td></tr></table></figure></p>
+<p>資料長的這樣<br>
+
+
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>modelname</th>
+      <th>mid</th>
+      <th>uid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>3D fanart Noel From Sora no Method</td>
+      <td>......</td>
+      <td>......</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>3D fanart Noel From Sora no Method</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3D fanart Noel From Sora no ...Method</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3D fanart Noel From Sora no Method</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>3D fanart Noel From Sora no Method</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</p>
+<p>刪除部份重複資料</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">print(df.count())</span><br><span class="line">df.drop_duplicates(inplace=<span class="keyword">True</span>)</span><br><span class="line">print(df.count())</span><br></pre></td></tr></table></figure>
+<pre><code>modelname    632832
+mid          632832
+uid          632832
+dtype: int64
+modelname    632677
+mid          632677
+uid          632677
+dtype: int64
+</code></pre><p>移除喜歡次數過少(小於5)的用戶,或少於10人按過讚的3D圖</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df = threshold_interaction(df,rowname=<span class="string">'uid'</span>,colname=<span class="string">'mid'</span>,row_min=<span class="number">5</span>,col_min=<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>Starting interactions info
+Number of rows: 62583
+Number of cols: 28806
+Sparsity: 0.04%
+Ending interactions info
+Number of rows: 13496
+Number of columns: 13618
+Sparsity: 0.25%
+</code></pre><p>存成稀疏矩陣與代碼編號對應</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">inter,uid_to_idx,idx_to_uid,mid_to_idx,idx_to_mid=df_to_spmatrix(df,<span class="string">'uid'</span>,<span class="string">'mid'</span>)</span><br></pre></td></tr></table></figure>
+<p>切切切資料</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## train,test split</span></span><br><span class="line">train,test, user_idxs = train_test_split(inter,split_count=<span class="number">1</span>,fraction=<span class="number">0.2</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%time train_coo = train.tocoo(copy=<span class="keyword">True</span>) <span class="comment"># csr -&gt; coo 代價超小!!驚驚!!</span></span><br></pre></td></tr></table></figure>
+<pre><code>Wall time: 7.01 ms
+</code></pre><h3 id="建立KNN模型"><a href="#建立KNN模型" class="headerlink" title="建立KNN模型"></a>建立KNN模型</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">model_u = KNNmodel(train,kind=<span class="string">'ubcf'</span>)</span><br><span class="line">model_u.jaccard_sim()</span><br><span class="line">model_u.fit(topK=<span class="number">50</span>,remove=<span class="keyword">True</span>) <span class="comment"># 取前50個最近鄰計算</span></span><br></pre></td></tr></table></figure>
+<pre><code>similarity (jaccard) matrix built (ubcf), 
+sparsity of similarity: 12.02 %
+-- start building topK user array...
+
+100%|███████████████████████████████| 13496/13496 [00:08&lt;00:00, 1509.78users/s]
+
+-- end building topK user array---
+start building prediction rating...
+
+100%|████████████████████████████████| 13496/13496 [00:44&lt;00:00, 306.58users/s]
+
+ubcf rating matrix built...    
+arrange purchased data in rating matrix...
+remove=True
+
+100%|██████████████████████████| 13432420/13432420 [00:13&lt;00:00, 964517.72it/s]
+
+numbers of rows : 13496
+numbers of cols: 13618
+sparsity of rating: 7.31 %
+save into *.rating attribute...
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">model_i = KNNmodel(train,kind=<span class="string">'ibcf'</span>)</span><br><span class="line">model_i.jaccard_sim()</span><br><span class="line">model_i.fit(topK=<span class="number">50</span>,remove=<span class="keyword">True</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>similarity (jaccard) matrix built (ibcf), 
+sparsity of similarity: 53.09 %
+
+
+100%|█████████████████████████████████| 13618/13618 [04:10&lt;00:00, 54.29items/s]
+
+
+ibcf rating matrix built...
+
+arrange purchased data in rating matrix...
+remove=True
+
+
+100%|████████████████████████████| 8557784/8557784 [00:09&lt;00:00, 938638.97it/s]
+
+
+numbers of rows : 13496
+numbers of cols: 13618
+sparsity of rating: 4.66 %
+save into *.rating attribute...
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## popular</span></span><br><span class="line">model_p = KNNmodel(train,kind=<span class="string">'popular'</span>)</span><br><span class="line">model_p.fit(topK=<span class="number">50</span>,remove=<span class="keyword">True</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>100%|██████████████████████████████████| 13496/13496 [00:02&lt;00:00, 6074.41it/s]
+
+
+popular rating matrix built...
+
+arrange purchased data in rating matrix...
+remove=True
+
+
+100%|██████████████████████████████| 674800/674800 [00:00&lt;00:00, 853418.49it/s]
+
+
+numbers of rows : 13496
+numbers of cols: 13618
+sparsity of rating: 0.37 %
+save into *.rating attribute...
+</code></pre><h3 id="猜你喜歡"><a href="#猜你喜歡" class="headerlink" title="猜你喜歡"></a>猜你喜歡</h3><p>這部分使用人眼來觀察一下，推薦出來的結果長的怎樣…</p>
+<p>偷自<a href="http://blog.ethanrosenthal.com/2016/10/19/implicit-mf-part-1/" target="_blank" rel="noopener">Data Pique</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_thumbnails</span><span class="params">(sim, idx, idx_to_mid, N=<span class="number">10</span>)</span>:</span></span><br><span class="line">    row = sim[idx, :].A.ravel()</span><br><span class="line">    thumbs = []</span><br><span class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> np.argsort(-row)[:N]:</span><br><span class="line">        response = requests.get(<span class="string">'https://sketchfab.com/i/models/&#123;&#125;'</span>.format(idx_to_mid[x])).json()</span><br><span class="line">        thumb = [x[<span class="string">'url'</span>] <span class="keyword">for</span> x <span class="keyword">in</span> response[<span class="string">'thumbnails'</span>][<span class="string">'images'</span>] <span class="keyword">if</span> x[<span class="string">'width'</span>] == <span class="number">200</span> <span class="keyword">and</span> x[<span class="string">'height'</span>]==<span class="number">200</span>]</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> thumb:</span><br><span class="line">            print(<span class="string">'no thumbnail'</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            thumb = thumb[<span class="number">0</span>]</span><br><span class="line">        thumbs.append(thumb)</span><br><span class="line">    <span class="keyword">return</span> thumbs</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">item_sim = model_i.sim</span><br><span class="line">thumbs = get_thumbnails(item_sim, <span class="number">0</span>, idx_to_mid)</span><br></pre></td></tr></table></figure>
+<pre><code>no thumbnail
+no thumbnail
+no thumbnail
+no thumbnail
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">thumbs_exists = [e <span class="keyword">for</span> e <span class="keyword">in</span> thumbs <span class="keyword">if</span> e != []]</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> IPython.display <span class="keyword">import</span> display, HTML</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">display_item</span><span class="params">(thumbs,N=<span class="number">5</span>)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>: </span><br><span class="line">        thumb_html = <span class="string">'&lt;img src='</span>+ <span class="string">'\"'</span>+thumbs[<span class="number">0</span>]+<span class="string">'\"&gt;'</span> </span><br><span class="line">    <span class="keyword">except</span> TypeError:</span><br><span class="line">        print(<span class="string">'No thumbnail...origin'</span>)</span><br><span class="line">        thumb_html= <span class="string">""</span></span><br><span class="line">    <span class="keyword">for</span> url <span class="keyword">in</span> thumbs[<span class="number">1</span>:]:</span><br><span class="line">        <span class="keyword">if</span> url:</span><br><span class="line">            thumb_html = thumb_html + <span class="string">'&lt;img src='</span>+ <span class="string">'\"'</span>+  url + <span class="string">'\"&gt;'</span>     </span><br><span class="line">    <span class="keyword">return</span> thumb_html</span><br><span class="line">    </span><br><span class="line">HTML(display_item(thumbs))</span><br></pre></td></tr></table></figure>
+<p><img src="https://media.sketchfab.com/urls/18d38b440a9647059983c0e064b54948/dist/thumbnails/4cf3dbf1096d4d299c6181ec8f67a149/200x200.jpeg"><img src="https://media.sketchfab.com/urls/6234f9020abd4ac79ebcdf6e09feff38/dist/thumbnails/0779456376614b65ad57dc06d2904481/200x200.jpeg"><img src="https://media.sketchfab.com/urls/0ad160d8515949169e2f09e912879a20/dist/thumbnails/6e85aeecf94c4ebb90b7127b7b9e819d/200x200.jpeg"><img src="https://media.sketchfab.com/urls/82367f6a22644f6f88b462077611559e/dist/thumbnails/9041c2a16d43466aaf81ee145ed20d3f/200x200.jpeg"><img src="https://media.sketchfab.com/urls/efe433deeeba4588bc089bba71fef9a5/dist/thumbnails/8bbd97ec0c3f481787694ca8d33211c4/200x200.jpeg"><img src="https://media.sketchfab.com/urls/4883769e53794a4295f25e49993f04d7/dist/thumbnails/3624d44225144991ae69d7b3a63c2f54/200x200.jpeg"></p>
+<p>宅氣十足…喜番!!顆顆~~</p>
+<hr>
+<h1 id="評估"><a href="#評估" class="headerlink" title="評估"></a>評估</h1><ul>
+<li>準確度</li>
+<li>召回度</li>
+</ul>
+<img src="/2018/01/20/rec1-knn/img/評估方法.png">
+<p>計算</p>
+<ol>
+<li>對所有用戶的推薦清單(熱門/ubcf/ibcf)</li>
+<li>準確度/召回度 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">uids = np.arange(<span class="number">0</span>,train.shape[<span class="number">0</span>])</span><br><span class="line">predall_u = model_u.predict(uids,topN=<span class="number">10</span>)</span><br><span class="line">model_u.evaluate(predall_u,test,method=<span class="string">'recall'</span>) <span class="comment"># recall: 16.6 %</span></span><br><span class="line"></span><br><span class="line">predall_p = model_p.predict(uids,topN=<span class="number">10</span>)</span><br><span class="line">model_p.evaluate(predall_p,test,method=<span class="string">'recall'</span>) <span class="comment"># recall:3.08 %</span></span><br><span class="line">predall_i = model_i.predict(uids,topN=<span class="number">10</span>)</span><br><span class="line">model_i.evaluate(predall_i,test,method=<span class="string">'recall'</span>) <span class="comment">#recall: 12 %</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<pre><code>-------------
+model: ubcf,
+topN: 10
+recall:16.19 %
+-------------
+model: popular,
+topN: 10
+recall:3.15 %   
+-------------
+model: ibcf,
+topN: 10
+recall:12.08 %
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">model_u.evaluate(predall_u,test,method=<span class="string">'precision'</span>)</span><br><span class="line">model_i.evaluate(predall_i,test,method=<span class="string">'precision'</span>)</span><br><span class="line">model_p.evaluate(predall_p,test,method=<span class="string">'precision'</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>-------------
+model: ubcf,
+topN: 10
+precision: 1.66 %
+
+-------------
+model: ibcf,
+topN: 10
+precision: 1.20 %
+
+-------------
+model: popular,
+topN: 10
+precision: 0.31 %
+</code></pre><h2 id="小結"><a href="#小結" class="headerlink" title="小結"></a>小結</h2><h3 id="最近鄰法-K-nearest-neighbor"><a href="#最近鄰法-K-nearest-neighbor" class="headerlink" title="最近鄰法(K nearest neighbor):"></a>最近鄰法(K nearest neighbor):</h3><ol>
+<li>考量兩兩相似度，然後針對用戶(物)最相似的K個人(物)推薦他們也買的商品。</li>
+<li>是一種基於偷看別人也買什麼的偷窺法</li>
+<li>僅由最鄰近方法能打敗熱門商品的推薦(base line)</li>
+<li>此方法必須計算兩兩之間pair-wise的相似度，在記憶體的消耗上非常巨大。計算量隨用戶(商品)成$N^2$的增加問題…</li>
+<li>改善方法須透過降維與近似近鄰法(approximate nearest neighbor)來達成，會放在下一篇來討論…Netflix/spotify…最經典的算法 - 矩陣分解法</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/推薦模型/" rel="tag"># 推薦模型</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/10/hello-world/" rel="next" title="部落格開箱">
+                <i class="fa fa-chevron-left"></i> 部落格開箱
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">喵喵抄人</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#推薦模型簡介"><span class="nav-number">1.</span> <span class="nav-text">推薦模型簡介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言-通常–-gt-廢話"><span class="nav-number">1.1.</span> <span class="nav-text">前言(通常–&gt;廢話)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#算法框架"><span class="nav-number">1.2.</span> <span class="nav-text">算法框架</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#最鄰近法-相似度"><span class="nav-number">2.</span> <span class="nav-text">最鄰近法(相似度)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#範例一"><span class="nav-number">2.1.</span> <span class="nav-text">範例一</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#範例二-推薦實例Sketchfab-Demo"><span class="nav-number">2.2.</span> <span class="nav-text">範例二: 推薦實例Sketchfab Demo</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#資料馬殺雞"><span class="nav-number">2.2.1.</span> <span class="nav-text">資料馬殺雞</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#建立KNN模型"><span class="nav-number">2.2.2.</span> <span class="nav-text">建立KNN模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#猜你喜歡"><span class="nav-number">2.2.3.</span> <span class="nav-text">猜你喜歡</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#評估"><span class="nav-number">3.</span> <span class="nav-text">評估</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#小結"><span class="nav-number">3.1.</span> <span class="nav-text">小結</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#最近鄰法-K-nearest-neighbor"><span class="nav-number">3.1.1.</span> <span class="nav-text">最近鄰法(K nearest neighbor):</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">喵喵抄人</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
