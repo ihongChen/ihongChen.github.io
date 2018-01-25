@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="推薦模型," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="推薦模型 - 矩陣分解在之前的介紹裡面，相似度關係是利用交易資料所形成的向量空間，而對兩兩用戶(或物品)來求得的。但是實務上使用這個方法會碰到問題：  維度過於龐大與稀疏，例如電子商務網站會有上百萬個用品。而單一用戶往往只有很少量(數個）與物品的交互關係(交易紀錄interaction data)此時會形成維度災難，亦即在維度過大的情況下，所有的東西(人)相似度趨近於0(距離無窮遠) 計算用戶（或">
+<meta name="keywords" content="推薦模型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="推薦模型-ALS算法">
+<meta property="og:url" content="http://yoursite.com/2018/01/25/rec2-als/index.html">
+<meta property="og:site_name" content="喵喵抄人">
+<meta property="og:description" content="推薦模型 - 矩陣分解在之前的介紹裡面，相似度關係是利用交易資料所形成的向量空間，而對兩兩用戶(或物品)來求得的。但是實務上使用這個方法會碰到問題：  維度過於龐大與稀疏，例如電子商務網站會有上百萬個用品。而單一用戶往往只有很少量(數個）與物品的交互關係(交易紀錄interaction data)此時會形成維度災難，亦即在維度過大的情況下，所有的東西(人)相似度趨近於0(距離無窮遠) 計算用戶（或">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://media.sketchfab.com/urls/5dcebcfaedbd4e7b8a27bd1ae55f1ac3/dist/thumbnails/42158696f2c24e63b5c22b57f7b79739/256x144.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/9120703a4aee4c2cb0313a9ca3e1e1a3/dist/thumbnails/52eb1132bd61459eb0983bd1e3fd256c/256x144.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/efe433deeeba4588bc089bba71fef9a5/dist/thumbnails/8bbd97ec0c3f481787694ca8d33211c4/854.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/18d38b440a9647059983c0e064b54948/dist/thumbnails/4cf3dbf1096d4d299c6181ec8f67a149/100x100.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/07f6a9a06db44bdb89b67a41f1fd72c2/dist/thumbnails/55ab6aa136e64643a5afa9f472bfdea0/864x486.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/93d3937e89ba48ea93623e0252387c0a/dist/thumbnails/bdd20344d9934036b8216fe4ce00e88e/640.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/f628b75a1a4c40188fa8d6de224276ec/dist/thumbnails/43b1aac22a5443e39e4299032e3dddf8/bd729eb3c67e4976914927a113a1dcfc.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/5d2f4e1c07bf4c61a6d49c3b10907b5b/dist/thumbnails/6d8396c874994608a66e437076aeca4d/854.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/40b77087a494482082c6380ec13c24be/dist/thumbnails/74f61150140849dbb424129bf21a7c91/640x360.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/ebc929ad5e814a22a9acf295a3d2c73b/dist/thumbnails/0ccc5d368b57471a9e1161e69e94500e/854.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/c4a8045933a84d389b688c135f2a1206/dist/thumbnails/61f3ab3840ee4a838433eb5231085130/864x486.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/da8321b4083448c3a63968a4916160c8/dist/thumbnails/f4ee820bc2e642cea42ff3b991a2cec6/6ad862261dbe4a14bd98529e1f00c2f8.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/b713b4f8776f4d659cf8f3184defe098/dist/thumbnails/cb4ded1da5f04139942c17da64c74e68/864x486.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/58eea0327d844fc9a245058b61b54c84/dist/thumbnails/ebc200a5b23e47098804098e43aa2dc7/2e11b882371146d399051d1750b6b39e.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/babbd1d498824d08bf181281c0175c13/dist/thumbnails/940d8e3370cb4330beec6a9d53345c91/864x486.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/fcb6df18bc7f41d5a53dfe95ebbf99e9/dist/thumbnails/117022cefda74e8aa7a3540165099167/864x486.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/c4cef084ea6e4827a11463ec484e99fe/dist/thumbnails/d91320f1e3b04ba7a74e0398cd2818e7/640x360.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/746358badc874c4991afa0f0f53d051b/dist/thumbnails/798e620a54bc4fc789b828ccff060760/864x486.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/52d59603ae3b44afaca1b531fda9ebb6/dist/thumbnails/e251fc17249147c69c41c7090e4886b7/864x486.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/ef0a847fd1df44e4a1d3d827c7f0bed9/dist/thumbnails/801635a0d4cc45d5924562ae1d17ba74/864x486.jpeg">
+<meta property="og:updated_time" content="2018-01-25T10:59:30.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="推薦模型-ALS算法">
+<meta name="twitter:description" content="推薦模型 - 矩陣分解在之前的介紹裡面，相似度關係是利用交易資料所形成的向量空間，而對兩兩用戶(或物品)來求得的。但是實務上使用這個方法會碰到問題：  維度過於龐大與稀疏，例如電子商務網站會有上百萬個用品。而單一用戶往往只有很少量(數個）與物品的交互關係(交易紀錄interaction data)此時會形成維度災難，亦即在維度過大的情況下，所有的東西(人)相似度趨近於0(距離無窮遠) 計算用戶（或">
+<meta name="twitter:image" content="https://media.sketchfab.com/urls/5dcebcfaedbd4e7b8a27bd1ae55f1ac3/dist/thumbnails/42158696f2c24e63b5c22b57f7b79739/256x144.jpeg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/01/25/rec2-als/"/>
+
+
+
+
+
+  <title>推薦模型-ALS算法 | 喵喵抄人</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">喵喵抄人</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/25/rec2-als/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="喵喵抄人">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="喵喵抄人">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">推薦模型-ALS算法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-01-25T00:31:12+08:00">
+                2018-01-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/推薦模型/" itemprop="url" rel="index">
+                    <span itemprop="name">推薦模型</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/25/rec2-als/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2018/01/25/rec2-als/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="推薦模型-矩陣分解"><a href="#推薦模型-矩陣分解" class="headerlink" title="推薦模型 - 矩陣分解"></a>推薦模型 - 矩陣分解</h1><p>在之前的介紹裡面，相似度關係是利用交易資料所形成的向量空間，而對兩兩用戶(或物品)來求得的。但是實務上使用這個方法會碰到問題：</p>
+<ol>
+<li>維度過於龐大與稀疏，例如電子商務網站會有上百萬個用品。而單一用戶往往只有很少量(數個）與物品的交互關係(交易紀錄interaction data)此時會形成<a href="https://zh.wikipedia.org/wiki/%E7%BB%B4%E6%95%B0%E7%81%BE%E9%9A%BE" target="_blank" rel="noopener">維度災難</a>，亦即在維度過大的情況下，所有的東西(人)相似度趨近於0(距離無窮遠)</li>
+<li>計算用戶（或物品)的兩兩關係會隨著用戶(物品）增加而耗時成指數增加</li>
+</ol>
+<p>矩陣分解目的是解決<strong>維度災難</strong>的手法</p>
+<h2 id="矩陣分解"><a href="#矩陣分解" class="headerlink" title="矩陣分解"></a>矩陣分解</h2><p>在矩陣分解的想法裡面，把用戶與物品的交易矩陣，用一種線性關係來逼近，<br>
+$$r_{ui} = \textbf{x}_u^T \cdot \textbf{y}_i $$
+<br>代表的意思為，用戶購買某商品的背後，有一種隱性特徵來決定購買的權重。而每個商品有關於這個隱性特徵的比例。這樣的線性關係，恰恰決定了用戶對某商品的打分。</p>
+<ul>
+<li><p>舉例來說: 小明會給<strong>超人特攻隊</strong> <code>評分=5</code>, 原因可能是這部片背後有三種特徵 $\textbf{y}_{超人特攻隊}$ = <code>{ 恐怖：0, 喜劇：2, 卡通:3 }</code> ,而小明對這三種特徵的喜好程度分別是:  $\textbf{x}_{小明}$ = <code>{喜愛恐怖:0, 喜愛喜劇:0.9, 喜愛卡通: 1}</code>。按照矩陣分解的想法：</p>
+
+$$r_{小明-超人特攻隊} = \textbf{x}_{小明}^T \cdot \textbf{y}_{超人特攻隊} = 1.8 + 3 = 4.8 \approx 5$$
+
+</li>
+<li><p>損失函數可寫成 </p>
+
+$$
+L = \sum_{u,i \in S} \left(r_{ui} - \textbf{x}_u \cdot \textbf{y}_i\right)^2 + \lambda_x \sum_u \left\Vert \textbf{x}_u \right\Vert ^2  + \lambda_y \sum_i \left\Vert \textbf{y}_i \right\Vert ^2 $$
+
+</li>
+</ul>
+<blockquote>
+<p>集合$s$表示有評分的物件(交互作用),$x_u,y_i$分別表示用戶 $u$ (物品$i$)的向量表示,$\lambda_x,\lambda_y$表示regularization </p>
+</blockquote>
+<h1 id="explicit-ALS-算法"><a href="#explicit-ALS-算法" class="headerlink" title="explicit ALS 算法"></a>explicit ALS 算法</h1><ul>
+<li>要最小化此損失函數，可以先固定 $\textbf{y}_i$ 為常數對另一變數$\textbf{x}_u$進行微分，並另其為0求得關係…</li>
+<li>相似的固定 $\textbf{x}_u$為常數，對另一變數$\textbf{y}_i$進行微分。</li>
+<li>重複上述動作直到收斂</li>
+</ul>
+<p>上述過程稱為Alternative Least Square (ALS)算法，由於物標函數是評價分數(1-5)的明顯用戶回饋分數，所以稱為explicit ALS算法。概念上的框架是基於矩陣分解，而針對兩組方程用交互迭代的方式取得收斂。</p>
+<h1 id="Implicit-ALS-算法"><a href="#Implicit-ALS-算法" class="headerlink" title="Implicit ALS 算法"></a>Implicit ALS 算法</h1><p>其實很常見的狀況是無從知道到底用戶對商品的評價是什麼，只能隱約猜測有買過的東西，對其偏好(preference)程度較高。但是對於沒有買過的商品，沒有購買存有兩種可能性</p>
+<ol>
+<li>不喜歡此類商品</li>
+<li>未察覺此商品</li>
+</ol>
+<p>在此篇<a href="http://yifanhu.net/PUB/cf.pdf" target="_blank" rel="noopener">論文</a>中提出信心程度的想法，將explicit ALS做進一步的改良。</p>
+
+\begin{equation}
+L = \sum_{u,i \in all} c_{ui}\left(p_{ui} - \textbf{x}_u \cdot \textbf{y}_i\right)^2 + \lambda_x \sum_u \left\Vert \textbf{x}_u \right\Vert ^2  + \lambda_y \sum_i \left\Vert \textbf{y}_i \right\Vert ^2 
+\end{equation}
+
+
+其中$p_{ui}$為喜歡或不喜歡${0,1}$之偏好，而$c_{ui}$代表說明用戶$u$對商品$i$之說明喜歡(或不喜歡)的信心程度，數值愈高代表信心程度愈大。與之前僅考慮有交互作用($\in S$)的情況不同，需要考慮所有未購買的狀況($\in all_{ui}$)。類似explicit解法，可以透過固定其中一個變數$\textbf{Y}_i$，微分後為零求得解析解(此解代表能使目標函數最小化)
+
+
+$$
+\textbf{X}_u = \left( \textbf{Y}^T\textbf{C}^u\textbf{Y}  + \lambda \textbf{I}\right)^{-1} \textbf{Y}^T\textbf{C}^uP(u)
+$$
+
+<blockquote>
+<p>若用戶有$m$個,商品有$n$個</p>
+<p>$\textbf{X}_u$代表用戶u的特徵向量($\in f\times 1$)</p>
+<p>$\textbf{Y}$為物品特徵向量縱向堆疊(<code>vstack</code>)的矩陣($\in n\times f$)</p>
+<p>$\textbf{C}^u$為對角線上才有值的$n \times n$矩陣</p>
+<p>$P(u)\in\mathbf{R}^{n\times 1}$包含每個用戶的喜好(1 or 0)二元結果</p>
+</blockquote>
+<p>同理可以取得<br>
+$$
+\textbf{Y}_i = \left( \textbf{X}^T\textbf{C}^i\textbf{X}  + \lambda \textbf{I}\right)^{-1} \textbf{X}^T\textbf{C}^iP(i)
+$$
+</p>
+<h2 id="計算效能"><a href="#計算效能" class="headerlink" title="計算效能:"></a>計算效能:</h2><p>在上式中每個用戶的特徵向量$\textbf{X}_u$取得，必須依賴於</p>
+<ol>
+<li>$\textbf{Y}^T\textbf{C}^u\textbf{Y},$需耗時$\mathcal{O}(f^2n)$</li>
+<li>$\textbf{Y}^T\textbf{C}^u P(u)$ 其中$P(u)$大部分為零，除了少數有與商品作用的$\textit{u}_n$個人($\textit{u}_n \ll n$)</li>
+<li>反矩陣$\left( \textbf{X}^T\textbf{C}^i\textbf{X}  + \lambda \textbf{I}\right)^{-1}$</li>
+</ol>
+<p>$\textbf{Y}^T\textbf{C}^u\textbf{Y}$進一步寫成$\textbf{Y}^T\left( \textbf{C}^u - 1\right)\textbf{Y} + \textbf{Y}^T\textbf{Y}$後一項不依賴於$u$僅需計算一次(不需要在用戶迴圈之中)，而前一項中的$\textbf{C}^u - 1$只有$\textit{u}_n$個非零項，可以大幅簡化計算為$\mathcal{O}(f^2\textit{n}_u)$。</p>
+<ul>
+<li>詳細推倒看<a href="http://datamusing.info/blog/2015/01/07/implicit-feedback-and-collaborative-filtering/" target="_blank" rel="noopener">這裡</a>使用Dirac notation,或<a href="https://math.stackexchange.com/questions/1072451/analytic-solution-for-matrix-factorization-using-alternating-least-squares/1073170#1073170" target="_blank" rel="noopener">這裡</a></li>
+</ul>
+<hr>
+<h1 id="實作3D模型資料"><a href="#實作3D模型資料" class="headerlink" title="實作3D模型資料"></a>實作3D模型資料</h1><h2 id="前處理"><a href="#前處理" class="headerlink" title="前處理"></a>前處理</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np </span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> csv</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">from</span> tqdm <span class="keyword">import</span> tqdm</span><br><span class="line">sys.path.append(<span class="string">'../'</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rec_helper <span class="keyword">import</span> *</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">df = pd.read_csv(<span class="string">'../rec-a-sketch/model_likes_anon.psv'</span>,</span><br><span class="line">                 sep=<span class="string">'|'</span>,quotechar=<span class="string">'\\'</span>,quoting=csv.QUOTE_MINIMAL)</span><br><span class="line">print(df.count())</span><br><span class="line">df.drop_duplicates(inplace=<span class="keyword">True</span>)</span><br><span class="line">print(df.count())</span><br><span class="line">df = threshold_interaction(df,rowname=<span class="string">'uid'</span>,colname=<span class="string">'mid'</span>,row_min=<span class="number">5</span>,col_min=<span class="number">10</span>)</span><br><span class="line">inter,uid_to_idx,idx_to_uid,mid_to_idx,idx_to_mid=df_to_spmatrix(df,<span class="string">'uid'</span>,<span class="string">'mid'</span>)</span><br><span class="line">train,test, user_idxs = train_test_split(inter,split_count=<span class="number">1</span>,fraction=<span class="number">0.2</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="implicit-ALS算法"><a href="#implicit-ALS算法" class="headerlink" title="implicit ALS算法"></a>implicit ALS算法</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">alternating_least_squares</span><span class="params">(Cui, factors, regularization, iterations=<span class="number">20</span>)</span>:</span></span><br><span class="line">    users, items = Cui.shape</span><br><span class="line"></span><br><span class="line">    X = np.random.rand(users, factors) * <span class="number">0.01</span></span><br><span class="line">    Y = np.random.rand(items, factors) * <span class="number">0.01</span></span><br><span class="line"></span><br><span class="line">    Ciu = Cui.T.tocsr()</span><br><span class="line">    <span class="keyword">for</span> iteration <span class="keyword">in</span> range(iterations):</span><br><span class="line">        X,Y = least_squares(Cui, X, Y, regularization)</span><br><span class="line">        Y,X = least_squares(Ciu, Y, X, regularization)</span><br><span class="line">        print(<span class="string">'iter:&#123;&#125;'</span>.format(iteration))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> X, Y</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">least_squares</span><span class="params">(Cui, X, Y, regularization)</span>:</span></span><br><span class="line">    users, factors = X.shape</span><br><span class="line">    YtY = Y.T.dot(Y)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> u <span class="keyword">in</span> range(users):</span><br><span class="line">        <span class="comment"># accumulate YtCuY + regularization * I in A</span></span><br><span class="line">        A = YtY + regularization * np.eye(factors)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># accumulate YtCuPu in b</span></span><br><span class="line">        b = np.zeros(factors)</span><br><span class="line"><span class="comment">#         if u % 1000 == 0:</span></span><br><span class="line"><span class="comment">#             print(u)</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> Cui[u,:].indices:</span><br><span class="line">            confidence = Cui[u,i]</span><br><span class="line">            factor = Y[i]</span><br><span class="line">            A += (confidence - <span class="number">1</span>) * np.outer(factor, factor)</span><br><span class="line">            b += confidence * factor</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Xu = (YtCuY + regularization * I)^-1 (YtCuPu)</span></span><br><span class="line">        X[u] = np.linalg.solve(A, b)</span><br><span class="line">    <span class="keyword">return</span> X,Y</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">users_embedding, items_embedding = alternating_least_squares(train,<span class="number">50</span>,regularization=<span class="number">1</span>,iterations=<span class="number">10</span>) <span class="comment"># time consuming : 15~20 min</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TopRelated</span>:</span></span><br><span class="line">    <span class="comment">## 利用向量內積，查找最鄰近的物品(cosine based)</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, items_factors)</span>:</span></span><br><span class="line">        <span class="comment">## 初始化需要正規化物品向量</span></span><br><span class="line">        norms = np.linalg.norm(items_factors, axis=<span class="number">1</span>)</span><br><span class="line">        self.factors = items_factors / norms[:, np.newaxis]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_related</span><span class="params">(self, itemid, N=<span class="number">10</span>)</span>:</span></span><br><span class="line">        scores = self.factors.dot(self.factors[itemid]) <span class="comment"># cosine </span></span><br><span class="line">        best = np.argpartition(scores, -N)[-N:] <span class="comment"># partion --&gt; 小於此的放在左側</span></span><br><span class="line">        <span class="keyword">return</span> sorted(zip(best, scores[best]), key=<span class="keyword">lambda</span> x: -x[<span class="number">1</span>])</span><br><span class="line"></span><br><span class="line">top_related = TopRelated(items_embedding)</span><br><span class="line">top_related.get_related(<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>[(10, 1.0000000000000002),
+ (73, 0.8333870013907535),
+ (51, 0.64537707303043956),
+ (11590, 0.62598405351397579),
+ (56, 0.62092298718015437),
+ (7, 0.61313760379281323),
+ (19, 0.58468685040231083),
+ (13005, 0.58408578340083528),
+ (145, 0.56861429220694504),
+ (11270, 0.5640808270205353)]
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> annoy</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ApproximateTopRelated</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, items_factors, treecount=<span class="number">20</span>)</span>:</span></span><br><span class="line">        index = annoy.AnnoyIndex(items_factors.shape[<span class="number">1</span>], <span class="string">'angular'</span>)</span><br><span class="line">        <span class="keyword">for</span> i, row <span class="keyword">in</span> enumerate(items_factors):</span><br><span class="line">            index.add_item(i, row)</span><br><span class="line">        index.build(treecount)</span><br><span class="line">        self.index = index</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_related</span><span class="params">(self, itemid, N=<span class="number">10</span>)</span>:</span></span><br><span class="line">        neighbours = self.index.get_nns_by_item(itemid, N)</span><br><span class="line">        <span class="keyword">return</span> sorted(((other, <span class="number">1</span> - self.index.get_distance(itemid, other))</span><br><span class="line">                      <span class="keyword">for</span> other <span class="keyword">in</span> neighbours), key=<span class="keyword">lambda</span> x: -x[<span class="number">1</span>])</span><br><span class="line"></span><br><span class="line">approx_topRelated_item = ApproximateTopRelated(items_embedding)</span><br><span class="line">approx_topRelated_item.get_related(<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>[(10, 1.0),
+ (73, 0.42274248600006104),
+ (51, 0.15783262252807617),
+ (56, 0.12927967309951782),
+ (7, 0.12038373947143555),
+ (19, 0.08861315250396729),
+ (13005, 0.08795374631881714),
+ (11270, 0.0662771463394165),
+ (1152, 0.05169880390167236),
+ (107, 0.02649134397506714)]
+</code></pre><h2 id="評估"><a href="#評估" class="headerlink" title="評估"></a>評估</h2><h3 id="item-based"><a href="#item-based" class="headerlink" title="item based"></a>item based</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> defaultdict</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">topNrecommend_ibcf</span><span class="params">(uid, items_factor, inter,nn=<span class="number">10</span>,topN=<span class="number">10</span>)</span>:</span></span><br><span class="line">    top_related = TopRelated(items_factor)</span><br><span class="line">    topN_dict = defaultdict(int)</span><br><span class="line">    <span class="keyword">for</span> item <span class="keyword">in</span> inter[uid,].indices:</span><br><span class="line">        topn_items = top_related.get_related(item,N=nn) <span class="comment">## cosine 相似</span></span><br><span class="line">        <span class="keyword">for</span> k,v <span class="keyword">in</span> topn_items:</span><br><span class="line">            topN_dict[k] += v</span><br><span class="line">            </span><br><span class="line">    sort_ids = sorted(topN_dict, key=topN_dict.get, reverse=<span class="keyword">True</span>)[:topN] <span class="comment"># sorted itemid by scores</span></span><br><span class="line">    scores = [topN_dict[e] <span class="keyword">for</span> e <span class="keyword">in</span> sort_ids]</span><br><span class="line">    <span class="keyword">return</span> zip(sort_ids,scores)</span><br></pre></td></tr></table></figure>
+<p>用戶0推薦…</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">topn_items= topNrecommend_ibcf(uid=<span class="number">0</span>,items_factor=items_embedding,inter=train)</span><br><span class="line">```python</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">evaluate</span><span class="params">(train, test,user_idxs,items_factors=None,users_factors=None,nn=<span class="number">50</span>, kind=<span class="string">'ibcf'</span>)</span>:</span></span><br><span class="line">    hits = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> user <span class="keyword">in</span> tqdm(user_idxs):</span><br><span class="line">        <span class="comment">## recommend topn items</span></span><br><span class="line">        <span class="keyword">if</span> kind == <span class="string">'ibcf'</span>:</span><br><span class="line">            topn_items = topNrecommend_ibcf(user, items_factors, inter=train,nn=nn)</span><br><span class="line">        <span class="keyword">elif</span> kind ==<span class="string">'ubcf'</span>:</span><br><span class="line">            topn_items = topNrecommend_ubcf(user, users_factors, inter=train, nn=nn)</span><br><span class="line">        <span class="keyword">elif</span> kind == <span class="string">'inner'</span>:</span><br><span class="line">            innerProduct = items_factors.dot(users_factors[user])</span><br><span class="line">            topn_k = np.argsort(-innerProduct)[:<span class="number">10</span>]</span><br><span class="line">            topn_v = [innerProduct[e] <span class="keyword">for</span> e <span class="keyword">in</span> topn_k]</span><br><span class="line">            topn_items = zip(topn_k,topn_v)</span><br><span class="line">        <span class="comment">## real(test) item -- only 1 data exist in each test user</span></span><br><span class="line">        y_item = test[user].indices</span><br><span class="line">        score = <span class="number">1</span> <span class="keyword">if</span> y_item <span class="keyword">in</span> list(zip(*topn_items))[<span class="number">0</span>] <span class="keyword">else</span> <span class="number">0</span></span><br><span class="line">        hits += score</span><br><span class="line">    <span class="keyword">return</span> hits/len(user_idxs)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">evaluate(train, test, user_idxs, items_factors=items_embedding,kind=<span class="string">'ibcf'</span>) <span class="comment">## 5.4 %</span></span><br></pre></td></tr></table></figure>
+<pre><code>100%|██████████| 2699/2699 [01:09&lt;00:00, 39.09it/s]
+
+
+
+
+
+0.05557613931085587
+</code></pre><h3 id="user-based"><a href="#user-based" class="headerlink" title="user based"></a>user based</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">topNrecommend_ubcf</span><span class="params">(uid, users_factor, inter,nn=<span class="number">10</span>,topN=<span class="number">10</span>)</span>:</span></span><br><span class="line">    top_related = TopRelated(users_factor)</span><br><span class="line">    topN_dict = defaultdict(float)           </span><br><span class="line">    topn_users = top_related.get_related(uid,N=nn) <span class="comment">## cosine 相似</span></span><br><span class="line">    <span class="keyword">for</span> top_u,v <span class="keyword">in</span> topn_users:</span><br><span class="line">        <span class="comment">## top_u買什麼</span></span><br><span class="line">        <span class="keyword">for</span> item <span class="keyword">in</span> inter[top_u,].indices:</span><br><span class="line">            topN_dict[item] += v</span><br><span class="line"></span><br><span class="line">    sort_ids = sorted(topN_dict, key=topN_dict.get, reverse=<span class="keyword">True</span>)[:topN] <span class="comment"># sorted itemid by scores</span></span><br><span class="line">    scores = [topN_dict[e] <span class="keyword">for</span> e <span class="keyword">in</span> sort_ids]</span><br><span class="line">    <span class="keyword">return</span> zip(sort_ids,scores)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">list(topNrecommend_ubcf(<span class="number">0</span>,users_embedding, train, nn=<span class="number">50</span>, topN=<span class="number">10</span>))</span><br></pre></td></tr></table></figure>
+<pre><code>[(0, 34.410089672904441),
+ (44, 12.561978619472963),
+ (18, 7.5103976826143359),
+ (28, 6.9053208293802317),
+ (84, 6.3513422315909036),
+ (31, 6.0606690420704021),
+ (131, 5.9223405961915061),
+ (11, 4.6633340311155704),
+ (167, 4.4891150115483809),
+ (48, 4.3329760554714234)]
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">evaluate(train,test,user_idxs,users_factors=users_embedding, kind=<span class="string">'ubcf'</span>, nn=<span class="number">50</span>) <span class="comment"># 8.1 %</span></span><br></pre></td></tr></table></figure>
+<pre><code>100%|██████████| 2699/2699 [00:35&lt;00:00, 76.42it/s]
+
+
+
+
+
+0.09447943682845499
+</code></pre><h3 id="Inner-Product"><a href="#Inner-Product" class="headerlink" title="Inner Product"></a>Inner Product</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">evaluate(train,test,user_idxs,users_factors=users_embedding,items_factors=items_embedding, kind=<span class="string">'inner'</span>, nn=<span class="number">50</span>) <span class="comment"># 8.1 %</span></span><br></pre></td></tr></table></figure>
+<pre><code>100%|██████████| 2699/2699 [00:04&lt;00:00, 542.85it/s]
+
+0.07336050389032975
+</code></pre><hr>
+<h2 id="Implicit"><a href="#Implicit" class="headerlink" title="Implicit"></a>Implicit</h2><p>利用<a href="https://github.com/benfred/implicit" target="_blank" rel="noopener">implicit</a>套件來做</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">train64 = train.astype(np.float64)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> implicit</span><br><span class="line"><span class="comment"># initialize a model</span></span><br><span class="line">model = implicit.als.AlternatingLeastSquares(factors=<span class="number">50</span>,regularization=<span class="number">0.01</span>)</span><br><span class="line"><span class="comment"># train the model on a sparse matrix of item/user/confidence weights</span></span><br><span class="line">model.fit(train64.T)</span><br><span class="line"><span class="comment"># recommend items for a user</span></span><br><span class="line">user_items = train64.tocsr()</span><br><span class="line">recommendations = model.recommend(<span class="number">0</span>, user_items)</span><br><span class="line"><span class="comment"># find related items</span></span><br><span class="line">related = model.similar_items(itemid=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">recommendations</span><br></pre></td></tr></table></figure>
+<pre><code>[(5, 0.20515807627064975),
+ (18, 0.1918636748483562),
+ (28, 0.14988751674773698),
+ (9, 0.14595963433612891),
+ (31, 0.14067785135181021),
+ (11, 0.13030475993688759),
+ (4, 0.11807272315328837),
+ (44, 0.11471354006636585),
+ (76, 0.10809321407142497),
+ (38, 0.10488577635996862)]
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">related</span><br></pre></td></tr></table></figure>
+<pre><code>[(0, 0.99999999999999978),
+ (28, 0.83579808129182787),
+ (8246, 0.73776182575596472),
+ (170, 0.72493331824975293),
+ (45, 0.713338619042862),
+ (53, 0.65034504543970606),
+ (89, 0.64663699468764868),
+ (12196, 0.63310832187945953),
+ (38, 0.6325378694017737),
+ (31, 0.60813921551971239)]
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## evaluate </span></span><br><span class="line">evaluate(train,test,user_idxs,items_factors=model.item_factors, users_factors=model.user_factors,nn=<span class="number">50</span>,kind=<span class="string">'inner'</span>) <span class="comment"># 6.26%</span></span><br></pre></td></tr></table></figure>
+<pre><code>100%|██████████| 2699/2699 [00:04&lt;00:00, 551.27it/s]
+
+0.07224898110411264
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">evaluate_model</span><span class="params">(train,test,model,user_idxs)</span>:</span></span><br><span class="line">    hits = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> user <span class="keyword">in</span> tqdm(user_idxs):</span><br><span class="line">        topn_items = model.recommend(user,train)</span><br><span class="line">        y_item = test[user].indices</span><br><span class="line">        score = <span class="number">1</span> <span class="keyword">if</span> y_item <span class="keyword">in</span> list(zip(*topn_items))[<span class="number">0</span>] <span class="keyword">else</span> <span class="number">0</span></span><br><span class="line">        hits += score</span><br><span class="line">    <span class="keyword">return</span> hits/len(user_idxs)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 移除已推薦過的</span></span><br><span class="line">evaluate_model(train,test,model,user_idxs) <span class="comment"># 7.3%</span></span><br></pre></td></tr></table></figure>
+<pre><code>100%|██████████| 2699/2699 [00:02&lt;00:00, 1015.34it/s]
+
+0.09040385327899222
+</code></pre><hr>
+<h3 id="調參數"><a href="#調參數" class="headerlink" title="調參數"></a>調參數</h3><p>grid search</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_squared_error</span><br><span class="line"><span class="keyword">import</span> itertools</span><br><span class="line"><span class="keyword">import</span> copy</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">calculate_recall</span><span class="params">(model,train,test,user_idxs)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    train: (csr_matrix) -- should be float64 </span></span><br><span class="line"><span class="string">        u-i sparse matrix for training </span></span><br><span class="line"><span class="string">    model: (implicit)</span></span><br><span class="line"><span class="string">        implicit model </span></span><br><span class="line"><span class="string">    user_idxs: (list)</span></span><br><span class="line"><span class="string">        user idxs for test </span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    hits = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> user <span class="keyword">in</span> user_idxs:</span><br><span class="line">        topn_items = model.recommend(user,train)</span><br><span class="line">        y_item = test[user].indices <span class="comment">##  1 data each user (in my case)</span></span><br><span class="line">        score = <span class="number">1</span> <span class="keyword">if</span> y_item <span class="keyword">in</span> list(zip(*topn_items))[<span class="number">0</span>] <span class="keyword">else</span> <span class="number">0</span></span><br><span class="line">        hits += score</span><br><span class="line">    <span class="keyword">return</span> hits/len(user_idxs)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">grid_search_learning_curve</span><span class="params">(model,train,test,param_grids,user_idxs)</span>:</span></span><br><span class="line">    curves = []</span><br><span class="line">    keys,values = zip(*param_grids.items())</span><br><span class="line">    <span class="keyword">for</span> value <span class="keyword">in</span> itertools.product(*values):</span><br><span class="line">        params = dict(zip(keys,value))</span><br><span class="line">        this_model = copy.deepcopy(model)</span><br><span class="line">        <span class="keyword">for</span> k,v <span class="keyword">in</span> params.items():</span><br><span class="line">            setattr(this_model,k,v)</span><br><span class="line">        this_model.fit(train64.T)</span><br><span class="line">        recall = calculate_recall(this_model,train,test,user_idxs)</span><br><span class="line">        print(<span class="string">'factors:&#123;&#125;, regularization:&#123;&#125;, recall:&#123;:.2f&#125;%'</span>.format(this_model.factors,this_model.regularization,recall*<span class="number">100</span>))</span><br><span class="line">        curves.append(&#123;<span class="string">'params'</span>: params,                       </span><br><span class="line">                       <span class="string">'recall@test'</span>: recall&#125;)</span><br><span class="line">    <span class="keyword">return</span> curves</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">param_grids = &#123;</span><br><span class="line">    <span class="string">'factors'</span>:[<span class="number">50</span>,<span class="number">75</span>,<span class="number">100</span>],</span><br><span class="line">    <span class="string">'regularization'</span>:[<span class="number">0</span>,<span class="number">1e-3</span>,<span class="number">1e-2</span>,<span class="number">1e-1</span>,<span class="number">1e1</span>,<span class="number">1e2</span>]</span><br><span class="line">&#125;</span><br><span class="line">curves = grid_search_learning_curve(model,train,test,param_grids,user_idxs)</span><br><span class="line">sorted(curves,key=<span class="keyword">lambda</span> x:x[<span class="string">'recall@test'</span>], reverse=<span class="keyword">True</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>[{&apos;params&apos;: {&apos;factors&apos;: 50, &apos;regularization&apos;: 0.01},
+  &apos;recall@test&apos;: 0.09299740644683216},
+ {&apos;params&apos;: {&apos;factors&apos;: 75, &apos;regularization&apos;: 0.01},
+  &apos;recall@test&apos;: 0.09299740644683216},
+ {&apos;params&apos;: {&apos;factors&apos;: 100, &apos;regularization&apos;: 0.01},
+  &apos;recall@test&apos;: 0.09299740644683216},
+ {&apos;params&apos;: {&apos;factors&apos;: 50, &apos;regularization&apos;: 0},
+  &apos;recall@test&apos;: 0.09262689885142646},
+ {&apos;params&apos;: {&apos;factors&apos;: 50, &apos;regularization&apos;: 0.001},
+  &apos;recall@test&apos;: 0.09262689885142646},
+ {&apos;params&apos;: {&apos;factors&apos;: 50, &apos;regularization&apos;: 0.1},
+  &apos;recall@test&apos;: 0.09262689885142646},
+ {&apos;params&apos;: {&apos;factors&apos;: 75, &apos;regularization&apos;: 0},
+  &apos;recall@test&apos;: 0.09262689885142646},
+ {&apos;params&apos;: {&apos;factors&apos;: 75, &apos;regularization&apos;: 0.001},
+  &apos;recall@test&apos;: 0.09262689885142646},
+ {&apos;params&apos;: {&apos;factors&apos;: 75, &apos;regularization&apos;: 0.1},
+  &apos;recall@test&apos;: 0.09262689885142646},
+ {&apos;params&apos;: {&apos;factors&apos;: 100, &apos;regularization&apos;: 0},
+  &apos;recall@test&apos;: 0.09262689885142646},
+ {&apos;params&apos;: {&apos;factors&apos;: 100, &apos;regularization&apos;: 0.001},
+  &apos;recall@test&apos;: 0.09262689885142646},
+ {&apos;params&apos;: {&apos;factors&apos;: 100, &apos;regularization&apos;: 0.1},
+  &apos;recall@test&apos;: 0.09262689885142646},
+ {&apos;params&apos;: {&apos;factors&apos;: 50, &apos;regularization&apos;: 10.0},
+  &apos;recall@test&apos;: 0.09040385327899222},
+ {&apos;params&apos;: {&apos;factors&apos;: 75, &apos;regularization&apos;: 10.0},
+  &apos;recall@test&apos;: 0.09040385327899222},
+ {&apos;params&apos;: {&apos;factors&apos;: 100, &apos;regularization&apos;: 10.0},
+  &apos;recall@test&apos;: 0.09040385327899222},
+ {&apos;params&apos;: {&apos;factors&apos;: 50, &apos;regularization&apos;: 100.0},
+  &apos;recall@test&apos;: 0.03445720637273064},
+ {&apos;params&apos;: {&apos;factors&apos;: 75, &apos;regularization&apos;: 100.0},
+  &apos;recall@test&apos;: 0.03445720637273064},
+ {&apos;params&apos;: {&apos;factors&apos;: 100, &apos;regularization&apos;: 100.0},
+  &apos;recall@test&apos;: 0.03445720637273064}]
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">model = implicit.als.AlternatingLeastSquares(factors=<span class="number">50</span>,regularization=<span class="number">0.01</span>,calculate_training_loss=<span class="keyword">True</span>)</span><br><span class="line">model.fit(train64.T)</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="工人智慧"><a href="#工人智慧" class="headerlink" title="工人智慧"></a>工人智慧</h1><p>看看結果</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">top_related = TopRelated(model.item_factors)</span><br><span class="line">top_related_itmes = top_related.get_related(itemid=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_thumbnails</span><span class="params">(top_related_items, idx, idx_to_mid, N=<span class="number">10</span>)</span>:</span></span><br><span class="line"><span class="comment">#     row = sim[idx, :].A.ravel()</span></span><br><span class="line">    topNitems,scores = zip(*top_related_items.get_related(idx))</span><br><span class="line">    thumbs = []</span><br><span class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> topNitems:         </span><br><span class="line">        response = requests.get(<span class="string">'https://sketchfab.com/i/models/&#123;&#125;'</span>.format(idx_to_mid[x])).json()</span><br><span class="line">        thumb = [x[<span class="string">'url'</span>] <span class="keyword">for</span> x <span class="keyword">in</span> response[<span class="string">'thumbnails'</span>][<span class="string">'images'</span>]]</span><br><span class="line"><span class="comment">#         print(thumb)</span></span><br><span class="line"><span class="comment">#         thumb = [x['url'] for x in response['thumbnails']['images'] if x['width'] == 200 and x['height']==200]</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> thumb:</span><br><span class="line">            print(<span class="string">'no thumbnail'</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            thumb = thumb[<span class="number">-2</span>]</span><br><span class="line">        thumbs.append(thumb)</span><br><span class="line">    <span class="keyword">return</span> thumbs</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">thumbs = get_thumbnails(top_related, idx=<span class="number">0</span>, idx_to_mid=idx_to_mid)</span><br><span class="line"><span class="keyword">from</span> IPython.display <span class="keyword">import</span> HTML, display</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">display_item</span><span class="params">(thumbs,origin_id,N=<span class="number">5</span>)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>: </span><br><span class="line">        print(<span class="string">'原圖======'</span>)</span><br><span class="line">        thumb_html = <span class="string">'&lt;img src='</span>+ <span class="string">'\"'</span>+thumbs[<span class="number">0</span>]+<span class="string">'\"&gt;'</span> </span><br><span class="line">        </span><br><span class="line">    <span class="keyword">except</span> TypeError:</span><br><span class="line">        print(<span class="string">'oops, 找不到小圖!!!'</span>)</span><br><span class="line">        response = requests.get(<span class="string">'https://sketchfab.com/i/models/&#123;&#125;'</span>.format(idx_to_mid[origin_id])).json()</span><br><span class="line">        thumb = [x[<span class="string">'url'</span>] <span class="keyword">for</span> x <span class="keyword">in</span> response[<span class="string">'thumbnails'</span>][<span class="string">'images'</span>]][<span class="number">-2</span>]</span><br><span class="line">        thumb_html = <span class="string">'&lt;img src= "&#123;&#125;"/&gt;'</span>.format(thumb)</span><br><span class="line">        print(<span class="string">'稍大的圖===='</span>)</span><br><span class="line">    <span class="keyword">for</span> url <span class="keyword">in</span> thumbs[<span class="number">1</span>:]:        </span><br><span class="line">        <span class="keyword">if</span> url:</span><br><span class="line">            thumb_html += <span class="string">""" &lt;img style='width:120px;margin:0px;float:left;border:1px solid black;' src='&#123;&#125;' /&gt;"""</span>.format(url)            </span><br><span class="line">    <span class="keyword">return</span> thumb_html</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HTML(display_item(thumbs,<span class="number">0</span>))</span><br></pre></td></tr></table></figure>
+<p>原圖======</p>
+<p><img src="https://media.sketchfab.com/urls/5dcebcfaedbd4e7b8a27bd1ae55f1ac3/dist/thumbnails/42158696f2c24e63b5c22b57f7b79739/256x144.jpeg"> </p>
+<p>相似圖======<br><img src="https://media.sketchfab.com/urls/9120703a4aee4c2cb0313a9ca3e1e1a3/dist/thumbnails/52eb1132bd61459eb0983bd1e3fd256c/256x144.jpeg"> </p>
+<p><img src="https://media.sketchfab.com/urls/efe433deeeba4588bc089bba71fef9a5/dist/thumbnails/8bbd97ec0c3f481787694ca8d33211c4/854.jpeg"> </p>
+<p><img src="https://media.sketchfab.com/urls/18d38b440a9647059983c0e064b54948/dist/thumbnails/4cf3dbf1096d4d299c6181ec8f67a149/100x100.jpeg"><br><img src="https://media.sketchfab.com/urls/07f6a9a06db44bdb89b67a41f1fd72c2/dist/thumbnails/55ab6aa136e64643a5afa9f472bfdea0/864x486.jpeg"></p>
+<p><img src="https://media.sketchfab.com/urls/93d3937e89ba48ea93623e0252387c0a/dist/thumbnails/bdd20344d9934036b8216fe4ce00e88e/640.jpeg"></p>
+<p><img src="https://media.sketchfab.com/urls/f628b75a1a4c40188fa8d6de224276ec/dist/thumbnails/43b1aac22a5443e39e4299032e3dddf8/bd729eb3c67e4976914927a113a1dcfc.jpeg"><br><img src="https://media.sketchfab.com/urls/5d2f4e1c07bf4c61a6d49c3b10907b5b/dist/thumbnails/6d8396c874994608a66e437076aeca4d/854.jpeg"><br><img src="https://media.sketchfab.com/urls/40b77087a494482082c6380ec13c24be/dist/thumbnails/74f61150140849dbb424129bf21a7c91/640x360.jpeg"><br><img src="https://media.sketchfab.com/urls/ebc929ad5e814a22a9acf295a3d2c73b/dist/thumbnails/0ccc5d368b57471a9e1161e69e94500e/854.jpeg"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">idx2 = <span class="number">200</span></span><br><span class="line">thumbs2 = get_thumbnails(top_related,idx=idx2,idx_to_mid=idx_to_mid)</span><br><span class="line">HTML(display_item(thumbs2,idx2))</span><br></pre></td></tr></table></figure>
+<p>原圖======</p>
+<p><img src="https://media.sketchfab.com/urls/c4a8045933a84d389b688c135f2a1206/dist/thumbnails/61f3ab3840ee4a838433eb5231085130/864x486.jpeg"> </p>
+<p>相似圖======<br><img src="https://media.sketchfab.com/urls/da8321b4083448c3a63968a4916160c8/dist/thumbnails/f4ee820bc2e642cea42ff3b991a2cec6/6ad862261dbe4a14bd98529e1f00c2f8.jpeg"> <img src="https://media.sketchfab.com/urls/b713b4f8776f4d659cf8f3184defe098/dist/thumbnails/cb4ded1da5f04139942c17da64c74e68/864x486.jpeg"> <img src="https://media.sketchfab.com/urls/58eea0327d844fc9a245058b61b54c84/dist/thumbnails/ebc200a5b23e47098804098e43aa2dc7/2e11b882371146d399051d1750b6b39e.jpeg"> <img src="https://media.sketchfab.com/urls/babbd1d498824d08bf181281c0175c13/dist/thumbnails/940d8e3370cb4330beec6a9d53345c91/864x486.jpeg"> <img src="https://media.sketchfab.com/urls/fcb6df18bc7f41d5a53dfe95ebbf99e9/dist/thumbnails/117022cefda74e8aa7a3540165099167/864x486.jpeg"> <img src="https://media.sketchfab.com/urls/c4cef084ea6e4827a11463ec484e99fe/dist/thumbnails/d91320f1e3b04ba7a74e0398cd2818e7/640x360.jpeg"> <img src="https://media.sketchfab.com/urls/746358badc874c4991afa0f0f53d051b/dist/thumbnails/798e620a54bc4fc789b828ccff060760/864x486.jpeg"> <img src="https://media.sketchfab.com/urls/52d59603ae3b44afaca1b531fda9ebb6/dist/thumbnails/e251fc17249147c69c41c7090e4886b7/864x486.jpeg"> <img src="https://media.sketchfab.com/urls/ef0a847fd1df44e4a1d3d827c7f0bed9/dist/thumbnails/801635a0d4cc45d5924562ae1d17ba74/864x486.jpeg"></p>
+<h1 id="小結"><a href="#小結" class="headerlink" title="小結"></a>小結</h1><p>矩陣分解利用一組用戶特徵向量與物品特徵向量之內積 $\textbf{X}_u \cdot \textbf{y}_i $，來推測每個人對商品的喜好程度，對於物品集較大的問題能有效解決維度爆炸的問題。但是在小樣本（$&lt;10^5$）中的3D模型的問題集裡面，上一次的暴力解法卻更為準確。利用<code>implicit</code>套件能很快的取得特徵向量與建立模型，還有兩個實務上需要提及的問題:</p>
+<ol>
+<li>儘管能取得特徵向量，在計算最近鄰的商品/人時候，常會遇到必須把N個物品遍歷一次,才能找到最相似的人/商品。</li>
+<li>在給用戶推薦的時候，需要作內積計算，再對所有商品作排序。這個過程對百萬級別的在線實時推薦商品，會變成不可行（效能問題）。</li>
+<li>只有透過用戶的交易行為來推薦，對於物品的特徵（特性）完全忽視。</li>
+</ol>
+<p>這三個問題將會放在下回來說明討論。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/推薦模型/" rel="tag"># 推薦模型</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/20/rec1-knn/" rel="next" title="推薦模型-基於鄰域算法">
+                <i class="fa fa-chevron-left"></i> 推薦模型-基於鄰域算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">喵喵抄人</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#推薦模型-矩陣分解"><span class="nav-number">1.</span> <span class="nav-text">推薦模型 - 矩陣分解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#矩陣分解"><span class="nav-number">1.1.</span> <span class="nav-text">矩陣分解</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#explicit-ALS-算法"><span class="nav-number">2.</span> <span class="nav-text">explicit ALS 算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Implicit-ALS-算法"><span class="nav-number">3.</span> <span class="nav-text">Implicit ALS 算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#計算效能"><span class="nav-number">3.1.</span> <span class="nav-text">計算效能:</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#實作3D模型資料"><span class="nav-number">4.</span> <span class="nav-text">實作3D模型資料</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前處理"><span class="nav-number">4.1.</span> <span class="nav-text">前處理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#implicit-ALS算法"><span class="nav-number">4.2.</span> <span class="nav-text">implicit ALS算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#評估"><span class="nav-number">4.3.</span> <span class="nav-text">評估</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#item-based"><span class="nav-number">4.3.1.</span> <span class="nav-text">item based</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#user-based"><span class="nav-number">4.3.2.</span> <span class="nav-text">user based</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Inner-Product"><span class="nav-number">4.3.3.</span> <span class="nav-text">Inner Product</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Implicit"><span class="nav-number">4.4.</span> <span class="nav-text">Implicit</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#調參數"><span class="nav-number">4.4.1.</span> <span class="nav-text">調參數</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#工人智慧"><span class="nav-number">5.</span> <span class="nav-text">工人智慧</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小結"><span class="nav-number">6.</span> <span class="nav-text">小結</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">喵喵抄人</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://ihong-1.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2018/01/25/rec2-als/';
+          this.page.identifier = '2018/01/25/rec2-als/';
+          this.page.title = '推薦模型-ALS算法';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://ihong-1.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
