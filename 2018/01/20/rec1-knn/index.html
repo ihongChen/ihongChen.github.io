@@ -72,7 +72,7 @@
 
 
 
-  <meta name="keywords" content="推薦模型," />
+  <meta name="keywords" content="推薦模型,KNN," />
 
 
 
@@ -84,9 +84,9 @@
 
 
 <meta name="description" content="推薦模型簡介前言(通常–&amp;gt;廢話)早餐去買三明治的時候，老闆娘總會好心的問說，要不要來杯紅茶。通常看在老闆娘的顏值誠意上，都會不爭氣的買了…推薦是針對原本客戶沒有預期到的結果，額外的跨售商品，或提示給用戶可能感興趣（喜歡）的東西（例如:買早餐時原本不會口渴，受到老闆娘的顏值影響才加購飲料的。） 推薦方法火熱了這麼多年是因為在商業上有很實際的目的：  促進交易 加速決策  簡單來說對商家來說，就">
-<meta name="keywords" content="推薦模型">
+<meta name="keywords" content="推薦模型,KNN">
 <meta property="og:type" content="article">
-<meta property="og:title" content="推薦模型-基於鄰域算法">
+<meta property="og:title" content="推薦模型-基於鄰域算法(K Nearest Neighbors)">
 <meta property="og:url" content="http://yoursite.com/2018/01/20/rec1-knn/index.html">
 <meta property="og:site_name" content="喵喵抄人">
 <meta property="og:description" content="推薦模型簡介前言(通常–&amp;gt;廢話)早餐去買三明治的時候，老闆娘總會好心的問說，要不要來杯紅茶。通常看在老闆娘的顏值誠意上，都會不爭氣的買了…推薦是針對原本客戶沒有預期到的結果，額外的跨售商品，或提示給用戶可能感興趣（喜歡）的東西（例如:買早餐時原本不會口渴，受到老闆娘的顏值影響才加購飲料的。） 推薦方法火熱了這麼多年是因為在商業上有很實際的目的：  促進交易 加速決策  簡單來說對商家來說，就">
@@ -100,9 +100,9 @@
 <meta property="og:image" content="https://media.sketchfab.com/urls/efe433deeeba4588bc089bba71fef9a5/dist/thumbnails/8bbd97ec0c3f481787694ca8d33211c4/200x200.jpeg">
 <meta property="og:image" content="https://media.sketchfab.com/urls/4883769e53794a4295f25e49993f04d7/dist/thumbnails/3624d44225144991ae69d7b3a63c2f54/200x200.jpeg">
 <meta property="og:image" content="http://yoursite.com/2018/01/20/rec1-knn/img/評估方法.png">
-<meta property="og:updated_time" content="2018-01-24T14:27:23.376Z">
+<meta property="og:updated_time" content="2018-01-26T15:20:01.548Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="推薦模型-基於鄰域算法">
+<meta name="twitter:title" content="推薦模型-基於鄰域算法(K Nearest Neighbors)">
 <meta name="twitter:description" content="推薦模型簡介前言(通常–&amp;gt;廢話)早餐去買三明治的時候，老闆娘總會好心的問說，要不要來杯紅茶。通常看在老闆娘的顏值誠意上，都會不爭氣的買了…推薦是針對原本客戶沒有預期到的結果，額外的跨售商品，或提示給用戶可能感興趣（喜歡）的東西（例如:買早餐時原本不會口渴，受到老闆娘的顏值影響才加購飲料的。） 推薦方法火熱了這麼多年是因為在商業上有很實際的目的：  促進交易 加速決策  簡單來說對商家來說，就">
 <meta name="twitter:image" content="http://yoursite.com/2018/01/20/rec1-knn/img/算法框架.png">
 
@@ -140,7 +140,7 @@
 
 
 
-  <title>推薦模型-基於鄰域算法 | 喵喵抄人</title>
+  <title>推薦模型-基於鄰域算法(K Nearest Neighbors) | 喵喵抄人</title>
   
 
 
@@ -294,7 +294,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">推薦模型-基於鄰域算法</h1>
+          <h1 class="post-title" itemprop="name headline">推薦模型-基於鄰域算法(K Nearest Neighbors)</h1>
         
 
         <div class="post-meta">
@@ -672,10 +672,10 @@ no thumbnail
 no thumbnail
 no thumbnail
 </code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> IPython.display <span class="keyword">import</span> display, HTML</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">display_item</span><span class="params">(thumbs,N=<span class="number">5</span>)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>: </span><br><span class="line">        thumb_html = <span class="string">'&lt;img src='</span>+ <span class="string">'\"'</span>+thumbs[<span class="number">0</span>]+<span class="string">'\"&gt;'</span> </span><br><span class="line">    <span class="keyword">except</span> TypeError:</span><br><span class="line">        print(<span class="string">'No thumbnail...origin'</span>)</span><br><span class="line">        thumb_html= <span class="string">""</span></span><br><span class="line">    <span class="keyword">for</span> url <span class="keyword">in</span> thumbs[<span class="number">1</span>:]:</span><br><span class="line">        <span class="keyword">if</span> url:</span><br><span class="line">            thumb_html = thumb_html + <span class="string">'&lt;img src='</span>+ <span class="string">'\"'</span>+  url + <span class="string">'\"&gt;'</span>     </span><br><span class="line">    <span class="keyword">return</span> thumb_html</span><br><span class="line">    </span><br><span class="line">HTML(display_item(thumbs))</span><br></pre></td></tr></table></figure>
-<p>原圖</p>
-<p><img src="https://media.sketchfab.com/urls/5dcebcfaedbd4e7b8a27bd1ae55f1ac3/dist/thumbnails/42158696f2c24e63b5c22b57f7b79739/256x144.jpeg"></p>
-<p>相似的圖</p>
-<p><img src="https://media.sketchfab.com/urls/18d38b440a9647059983c0e064b54948/dist/thumbnails/4cf3dbf1096d4d299c6181ec8f67a149/200x200.jpeg"><br><img src="https://media.sketchfab.com/urls/6234f9020abd4ac79ebcdf6e09feff38/dist/thumbnails/0779456376614b65ad57dc06d2904481/200x200.jpeg"><img src="https://media.sketchfab.com/urls/0ad160d8515949169e2f09e912879a20/dist/thumbnails/6e85aeecf94c4ebb90b7127b7b9e819d/200x200.jpeg"><img src="https://media.sketchfab.com/urls/82367f6a22644f6f88b462077611559e/dist/thumbnails/9041c2a16d43466aaf81ee145ed20d3f/200x200.jpeg"><img src="https://media.sketchfab.com/urls/efe433deeeba4588bc089bba71fef9a5/dist/thumbnails/8bbd97ec0c3f481787694ca8d33211c4/200x200.jpeg"><img src="https://media.sketchfab.com/urls/4883769e53794a4295f25e49993f04d7/dist/thumbnails/3624d44225144991ae69d7b3a63c2f54/200x200.jpeg"></p>
+<p>=====原圖=====</p>
+<p><img src="https://media.sketchfab.com/urls/5dcebcfaedbd4e7b8a27bd1ae55f1ac3/dist/thumbnails/42158696f2c24e63b5c22b57f7b79739/256x144.jpeg" style="width: 250px;"></p>
+<p>=====相似的圖=====</p>
+<p><img src="https://media.sketchfab.com/urls/18d38b440a9647059983c0e064b54948/dist/thumbnails/4cf3dbf1096d4d299c6181ec8f67a149/200x200.jpeg" style="width: 250px;"><br><img src="https://media.sketchfab.com/urls/6234f9020abd4ac79ebcdf6e09feff38/dist/thumbnails/0779456376614b65ad57dc06d2904481/200x200.jpeg" style="width: 250px;"><img src="https://media.sketchfab.com/urls/0ad160d8515949169e2f09e912879a20/dist/thumbnails/6e85aeecf94c4ebb90b7127b7b9e819d/200x200.jpeg" style="width: 250px;"><img src="https://media.sketchfab.com/urls/82367f6a22644f6f88b462077611559e/dist/thumbnails/9041c2a16d43466aaf81ee145ed20d3f/200x200.jpeg" style="width: 250px;"><img src="https://media.sketchfab.com/urls/efe433deeeba4588bc089bba71fef9a5/dist/thumbnails/8bbd97ec0c3f481787694ca8d33211c4/200x200.jpeg" style="width: 250px;"><img src="https://media.sketchfab.com/urls/4883769e53794a4295f25e49993f04d7/dist/thumbnails/3624d44225144991ae69d7b3a63c2f54/200x200.jpeg" style="width: 250px;"></p>
 <p>宅氣十足…喜番!!顆顆~~</p>
 <hr>
 <h1 id="評估"><a href="#評估" class="headerlink" title="評估"></a>評估</h1><p>評估方法有許多種，這裡只有使用最簡單的方法。</p>
@@ -745,6 +745,8 @@ precision: 0.31 %
           
             <a href="/tags/推薦模型/" rel="tag"># 推薦模型</a>
           
+            <a href="/tags/KNN/" rel="tag"># KNN</a>
+          
         </div>
       
 
@@ -766,8 +768,8 @@ precision: 0.31 %
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/01/25/rec2-als/" rel="prev" title="推薦模型-ALS算法">
-                推薦模型-ALS算法 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/01/25/rec2-als/" rel="prev" title="推薦模型-ALS算法(Alternative Least Square)">
+                推薦模型-ALS算法(Alternative Least Square) <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -855,7 +857,7 @@ precision: 0.31 %
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -877,7 +879,7 @@ precision: 0.31 %
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -1083,7 +1085,7 @@ precision: 0.31 %
         var disqus_config = function () {
           this.page.url = 'http://yoursite.com/2018/01/20/rec1-knn/';
           this.page.identifier = '2018/01/20/rec1-knn/';
-          this.page.title = '推薦模型-基於鄰域算法';
+          this.page.title = '推薦模型-基於鄰域算法(K Nearest Neighbors)';
         };
         var d = document, s = d.createElement('script');
         s.src = 'https://ihong-1.disqus.com/embed.js';

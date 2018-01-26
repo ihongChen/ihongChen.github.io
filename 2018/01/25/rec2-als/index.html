@@ -72,7 +72,7 @@
 
 
 
-  <meta name="keywords" content="推薦模型," />
+  <meta name="keywords" content="推薦模型,ALS," />
 
 
 
@@ -84,14 +84,14 @@
 
 
 <meta name="description" content="推薦模型 - 矩陣分解在之前的介紹裡面，相似度關係是利用交易資料所形成的向量空間，而對兩兩用戶(或物品)來求得的。但是實務上使用這個方法會碰到問題：  維度過於龐大與稀疏，例如電子商務網站會有上百萬個用品。而單一用戶往往只有很少量(數個）與物品的交互關係(交易紀錄interaction data)此時會形成維度災難，亦即在維度過大的情況下，所有的東西(人)相似度趨近於0(距離無窮遠) 計算用戶（或">
-<meta name="keywords" content="推薦模型">
+<meta name="keywords" content="推薦模型,ALS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="推薦模型-ALS算法">
+<meta property="og:title" content="推薦模型-ALS算法(Alternative Least Square)">
 <meta property="og:url" content="http://yoursite.com/2018/01/25/rec2-als/index.html">
 <meta property="og:site_name" content="喵喵抄人">
 <meta property="og:description" content="推薦模型 - 矩陣分解在之前的介紹裡面，相似度關係是利用交易資料所形成的向量空間，而對兩兩用戶(或物品)來求得的。但是實務上使用這個方法會碰到問題：  維度過於龐大與稀疏，例如電子商務網站會有上百萬個用品。而單一用戶往往只有很少量(數個）與物品的交互關係(交易紀錄interaction data)此時會形成維度災難，亦即在維度過大的情況下，所有的東西(人)相似度趨近於0(距離無窮遠) 計算用戶（或">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https://media.sketchfab.com/urls/5dcebcfaedbd4e7b8a27bd1ae55f1ac3/dist/thumbnails/42158696f2c24e63b5c22b57f7b79739/256x144.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/5dcebcfaedbd4e7b8a27bd1ae55f1ac3/dist/thumbnails/42158696f2c24e63b5c22b57f7b79739/256x144.jpeg style=">
 <meta property="og:image" content="https://media.sketchfab.com/urls/9120703a4aee4c2cb0313a9ca3e1e1a3/dist/thumbnails/52eb1132bd61459eb0983bd1e3fd256c/256x144.jpeg">
 <meta property="og:image" content="https://media.sketchfab.com/urls/efe433deeeba4588bc089bba71fef9a5/dist/thumbnails/8bbd97ec0c3f481787694ca8d33211c4/854.jpeg">
 <meta property="og:image" content="https://media.sketchfab.com/urls/18d38b440a9647059983c0e064b54948/dist/thumbnails/4cf3dbf1096d4d299c6181ec8f67a149/100x100.jpeg">
@@ -111,11 +111,11 @@
 <meta property="og:image" content="https://media.sketchfab.com/urls/746358badc874c4991afa0f0f53d051b/dist/thumbnails/798e620a54bc4fc789b828ccff060760/864x486.jpeg">
 <meta property="og:image" content="https://media.sketchfab.com/urls/52d59603ae3b44afaca1b531fda9ebb6/dist/thumbnails/e251fc17249147c69c41c7090e4886b7/864x486.jpeg">
 <meta property="og:image" content="https://media.sketchfab.com/urls/ef0a847fd1df44e4a1d3d827c7f0bed9/dist/thumbnails/801635a0d4cc45d5924562ae1d17ba74/864x486.jpeg">
-<meta property="og:updated_time" content="2018-01-25T14:13:04.148Z">
+<meta property="og:updated_time" content="2018-01-26T15:17:03.026Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="推薦模型-ALS算法">
+<meta name="twitter:title" content="推薦模型-ALS算法(Alternative Least Square)">
 <meta name="twitter:description" content="推薦模型 - 矩陣分解在之前的介紹裡面，相似度關係是利用交易資料所形成的向量空間，而對兩兩用戶(或物品)來求得的。但是實務上使用這個方法會碰到問題：  維度過於龐大與稀疏，例如電子商務網站會有上百萬個用品。而單一用戶往往只有很少量(數個）與物品的交互關係(交易紀錄interaction data)此時會形成維度災難，亦即在維度過大的情況下，所有的東西(人)相似度趨近於0(距離無窮遠) 計算用戶（或">
-<meta name="twitter:image" content="https://media.sketchfab.com/urls/5dcebcfaedbd4e7b8a27bd1ae55f1ac3/dist/thumbnails/42158696f2c24e63b5c22b57f7b79739/256x144.jpeg">
+<meta name="twitter:image" content="https://media.sketchfab.com/urls/5dcebcfaedbd4e7b8a27bd1ae55f1ac3/dist/thumbnails/42158696f2c24e63b5c22b57f7b79739/256x144.jpeg style=">
 
 
 
@@ -151,7 +151,7 @@
 
 
 
-  <title>推薦模型-ALS算法 | 喵喵抄人</title>
+  <title>推薦模型-ALS算法(Alternative Least Square) | 喵喵抄人</title>
   
 
 
@@ -305,7 +305,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">推薦模型-ALS算法</h1>
+          <h1 class="post-title" itemprop="name headline">推薦模型-ALS算法(Alternative Least Square)</h1>
         
 
         <div class="post-meta">
@@ -506,10 +506,6 @@ $$
 </code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">evaluate(train,test,user_idxs,users_factors=users_embedding, kind=<span class="string">'ubcf'</span>, nn=<span class="number">50</span>) <span class="comment"># 8.1 %</span></span><br></pre></td></tr></table></figure>
 <pre><code>100%|██████████| 2699/2699 [00:35&lt;00:00, 76.42it/s]
 
-
-
-
-
 0.09447943682845499
 </code></pre><h3 id="Inner-Product"><a href="#Inner-Product" class="headerlink" title="Inner Product"></a>Inner Product</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">evaluate(train,test,user_idxs,users_factors=users_embedding,items_factors=items_embedding, kind=<span class="string">'inner'</span>, nn=<span class="number">50</span>) <span class="comment"># 8.1 %</span></span><br></pre></td></tr></table></figure>
 <pre><code>100%|██████████| 2699/2699 [00:04&lt;00:00, 542.85it/s]
@@ -600,16 +596,16 @@ $$
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">display_item</span><span class="params">(thumbs,origin_id,N=<span class="number">5</span>)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>: </span><br><span class="line">        print(<span class="string">'原圖======'</span>)</span><br><span class="line">        thumb_html = <span class="string">'&lt;img src='</span>+ <span class="string">'\"'</span>+thumbs[<span class="number">0</span>]+<span class="string">'\"&gt;'</span> </span><br><span class="line">        </span><br><span class="line">    <span class="keyword">except</span> TypeError:</span><br><span class="line">        print(<span class="string">'oops, 找不到小圖!!!'</span>)</span><br><span class="line">        response = requests.get(<span class="string">'https://sketchfab.com/i/models/&#123;&#125;'</span>.format(idx_to_mid[origin_id])).json()</span><br><span class="line">        thumb = [x[<span class="string">'url'</span>] <span class="keyword">for</span> x <span class="keyword">in</span> response[<span class="string">'thumbnails'</span>][<span class="string">'images'</span>]][<span class="number">-2</span>]</span><br><span class="line">        thumb_html = <span class="string">'&lt;img src= "&#123;&#125;"/&gt;'</span>.format(thumb)</span><br><span class="line">        print(<span class="string">'稍大的圖===='</span>)</span><br><span class="line">    <span class="keyword">for</span> url <span class="keyword">in</span> thumbs[<span class="number">1</span>:]:        </span><br><span class="line">        <span class="keyword">if</span> url:</span><br><span class="line">            thumb_html += <span class="string">""" &lt;img style='width:120px;margin:0px;float:left;border:1px solid black;' src='&#123;&#125;' /&gt;"""</span>.format(url)            </span><br><span class="line">    <span class="keyword">return</span> thumb_html</span><br></pre></td></tr></table></figure>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HTML(display_item(thumbs,<span class="number">0</span>))</span><br></pre></td></tr></table></figure>
 <p>原圖======</p>
-<p><img src="https://media.sketchfab.com/urls/5dcebcfaedbd4e7b8a27bd1ae55f1ac3/dist/thumbnails/42158696f2c24e63b5c22b57f7b79739/256x144.jpeg"> </p>
-<p>相似圖======<br><img src="https://media.sketchfab.com/urls/9120703a4aee4c2cb0313a9ca3e1e1a3/dist/thumbnails/52eb1132bd61459eb0983bd1e3fd256c/256x144.jpeg"> </p>
-<p><img src="https://media.sketchfab.com/urls/efe433deeeba4588bc089bba71fef9a5/dist/thumbnails/8bbd97ec0c3f481787694ca8d33211c4/854.jpeg"> </p>
-<p><img src="https://media.sketchfab.com/urls/18d38b440a9647059983c0e064b54948/dist/thumbnails/4cf3dbf1096d4d299c6181ec8f67a149/100x100.jpeg"><br><img src="https://media.sketchfab.com/urls/07f6a9a06db44bdb89b67a41f1fd72c2/dist/thumbnails/55ab6aa136e64643a5afa9f472bfdea0/864x486.jpeg"></p>
-<p><img src="https://media.sketchfab.com/urls/93d3937e89ba48ea93623e0252387c0a/dist/thumbnails/bdd20344d9934036b8216fe4ce00e88e/640.jpeg"></p>
-<p><img src="https://media.sketchfab.com/urls/f628b75a1a4c40188fa8d6de224276ec/dist/thumbnails/43b1aac22a5443e39e4299032e3dddf8/bd729eb3c67e4976914927a113a1dcfc.jpeg"><br><img src="https://media.sketchfab.com/urls/5d2f4e1c07bf4c61a6d49c3b10907b5b/dist/thumbnails/6d8396c874994608a66e437076aeca4d/854.jpeg"><br><img src="https://media.sketchfab.com/urls/40b77087a494482082c6380ec13c24be/dist/thumbnails/74f61150140849dbb424129bf21a7c91/640x360.jpeg"><br><img src="https://media.sketchfab.com/urls/ebc929ad5e814a22a9acf295a3d2c73b/dist/thumbnails/0ccc5d368b57471a9e1161e69e94500e/854.jpeg"></p>
+<p><img src="https://media.sketchfab.com/urls/5dcebcfaedbd4e7b8a27bd1ae55f1ac3/dist/thumbnails/42158696f2c24e63b5c22b57f7b79739/256x144.jpeg style=" width:="" 250px;""=""> </p>
+<p>相似圖======<br><img src="https://media.sketchfab.com/urls/9120703a4aee4c2cb0313a9ca3e1e1a3/dist/thumbnails/52eb1132bd61459eb0983bd1e3fd256c/256x144.jpeg" style="width: 250px;"> </p>
+<p><img src="https://media.sketchfab.com/urls/efe433deeeba4588bc089bba71fef9a5/dist/thumbnails/8bbd97ec0c3f481787694ca8d33211c4/854.jpeg" style="width: 250px;"> </p>
+<p><img src="https://media.sketchfab.com/urls/18d38b440a9647059983c0e064b54948/dist/thumbnails/4cf3dbf1096d4d299c6181ec8f67a149/100x100.jpeg" style="width: 250px;"><br><img src="https://media.sketchfab.com/urls/07f6a9a06db44bdb89b67a41f1fd72c2/dist/thumbnails/55ab6aa136e64643a5afa9f472bfdea0/864x486.jpeg" style="width: 250px;"></p>
+<p><img src="https://media.sketchfab.com/urls/93d3937e89ba48ea93623e0252387c0a/dist/thumbnails/bdd20344d9934036b8216fe4ce00e88e/640.jpeg" style="width: 250px;"></p>
+<p><img src="https://media.sketchfab.com/urls/f628b75a1a4c40188fa8d6de224276ec/dist/thumbnails/43b1aac22a5443e39e4299032e3dddf8/bd729eb3c67e4976914927a113a1dcfc.jpeg" style="width: 250px;"><br><img src="https://media.sketchfab.com/urls/5d2f4e1c07bf4c61a6d49c3b10907b5b/dist/thumbnails/6d8396c874994608a66e437076aeca4d/854.jpeg" style="width: 250px;"><br><img src="https://media.sketchfab.com/urls/40b77087a494482082c6380ec13c24be/dist/thumbnails/74f61150140849dbb424129bf21a7c91/640x360.jpeg" style="width: 250px;"><br><img src="https://media.sketchfab.com/urls/ebc929ad5e814a22a9acf295a3d2c73b/dist/thumbnails/0ccc5d368b57471a9e1161e69e94500e/854.jpeg" style="width: 250px;"></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">idx2 = <span class="number">200</span></span><br><span class="line">thumbs2 = get_thumbnails(top_related,idx=idx2,idx_to_mid=idx_to_mid)</span><br><span class="line">HTML(display_item(thumbs2,idx2))</span><br></pre></td></tr></table></figure>
 <p>原圖======</p>
-<p><img src="https://media.sketchfab.com/urls/c4a8045933a84d389b688c135f2a1206/dist/thumbnails/61f3ab3840ee4a838433eb5231085130/864x486.jpeg"> </p>
-<p>相似圖======<br><img src="https://media.sketchfab.com/urls/da8321b4083448c3a63968a4916160c8/dist/thumbnails/f4ee820bc2e642cea42ff3b991a2cec6/6ad862261dbe4a14bd98529e1f00c2f8.jpeg"> <img src="https://media.sketchfab.com/urls/b713b4f8776f4d659cf8f3184defe098/dist/thumbnails/cb4ded1da5f04139942c17da64c74e68/864x486.jpeg"> <img src="https://media.sketchfab.com/urls/58eea0327d844fc9a245058b61b54c84/dist/thumbnails/ebc200a5b23e47098804098e43aa2dc7/2e11b882371146d399051d1750b6b39e.jpeg"> <img src="https://media.sketchfab.com/urls/babbd1d498824d08bf181281c0175c13/dist/thumbnails/940d8e3370cb4330beec6a9d53345c91/864x486.jpeg"> <img src="https://media.sketchfab.com/urls/fcb6df18bc7f41d5a53dfe95ebbf99e9/dist/thumbnails/117022cefda74e8aa7a3540165099167/864x486.jpeg"> <img src="https://media.sketchfab.com/urls/c4cef084ea6e4827a11463ec484e99fe/dist/thumbnails/d91320f1e3b04ba7a74e0398cd2818e7/640x360.jpeg"> <img src="https://media.sketchfab.com/urls/746358badc874c4991afa0f0f53d051b/dist/thumbnails/798e620a54bc4fc789b828ccff060760/864x486.jpeg"> <img src="https://media.sketchfab.com/urls/52d59603ae3b44afaca1b531fda9ebb6/dist/thumbnails/e251fc17249147c69c41c7090e4886b7/864x486.jpeg"> <img src="https://media.sketchfab.com/urls/ef0a847fd1df44e4a1d3d827c7f0bed9/dist/thumbnails/801635a0d4cc45d5924562ae1d17ba74/864x486.jpeg"></p>
+<p><img src="https://media.sketchfab.com/urls/c4a8045933a84d389b688c135f2a1206/dist/thumbnails/61f3ab3840ee4a838433eb5231085130/864x486.jpeg" style="width: 250px;"> </p>
+<p>相似圖======<br><img src="https://media.sketchfab.com/urls/da8321b4083448c3a63968a4916160c8/dist/thumbnails/f4ee820bc2e642cea42ff3b991a2cec6/6ad862261dbe4a14bd98529e1f00c2f8.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/b713b4f8776f4d659cf8f3184defe098/dist/thumbnails/cb4ded1da5f04139942c17da64c74e68/864x486.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/58eea0327d844fc9a245058b61b54c84/dist/thumbnails/ebc200a5b23e47098804098e43aa2dc7/2e11b882371146d399051d1750b6b39e.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/babbd1d498824d08bf181281c0175c13/dist/thumbnails/940d8e3370cb4330beec6a9d53345c91/864x486.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/fcb6df18bc7f41d5a53dfe95ebbf99e9/dist/thumbnails/117022cefda74e8aa7a3540165099167/864x486.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/c4cef084ea6e4827a11463ec484e99fe/dist/thumbnails/d91320f1e3b04ba7a74e0398cd2818e7/640x360.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/746358badc874c4991afa0f0f53d051b/dist/thumbnails/798e620a54bc4fc789b828ccff060760/864x486.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/52d59603ae3b44afaca1b531fda9ebb6/dist/thumbnails/e251fc17249147c69c41c7090e4886b7/864x486.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/ef0a847fd1df44e4a1d3d827c7f0bed9/dist/thumbnails/801635a0d4cc45d5924562ae1d17ba74/864x486.jpeg" style="width: 250px;"></p>
 <hr>
 <h1 id="小結"><a href="#小結" class="headerlink" title="小結"></a>小結</h1><p>矩陣分解利用一組用戶特徵向量與物品特徵向量之內積 $\textbf{X}_u \cdot \textbf{y}_i $，來推測每個人對商品的喜好程度，對於物品集較大的問題能有效解決維度爆炸的問題。但是在小樣本（$&lt;10^5$）中的3D模型的問題集裡面，上一次的暴力解法卻更為準確。利用<code>implicit</code>套件能很快的取得特徵向量與建立模型，還有兩個實務上需要提及的問題:</p>
 <ol>
@@ -637,6 +633,8 @@ $$
           
             <a href="/tags/推薦模型/" rel="tag"># 推薦模型</a>
           
+            <a href="/tags/ALS/" rel="tag"># ALS</a>
+          
         </div>
       
 
@@ -648,8 +646,8 @@ $$
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/01/20/rec1-knn/" rel="next" title="推薦模型-基於鄰域算法">
-                <i class="fa fa-chevron-left"></i> 推薦模型-基於鄰域算法
+              <a href="/2018/01/20/rec1-knn/" rel="next" title="推薦模型-基於鄰域算法(K Nearest Neighbors)">
+                <i class="fa fa-chevron-left"></i> 推薦模型-基於鄰域算法(K Nearest Neighbors)
               </a>
             
           </div>
@@ -657,6 +655,10 @@ $$
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/26/rec3-ann/" rel="prev" title="推薦模型-近似鄰近法(Approximation Nearest Neighbors)">
+                推薦模型-近似鄰近法(Approximation Nearest Neighbors) <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -743,7 +745,7 @@ $$
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -765,7 +767,7 @@ $$
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -971,7 +973,7 @@ $$
         var disqus_config = function () {
           this.page.url = 'http://yoursite.com/2018/01/25/rec2-als/';
           this.page.identifier = '2018/01/25/rec2-als/';
-          this.page.title = '推薦模型-ALS算法';
+          this.page.title = '推薦模型-ALS算法(Alternative Least Square)';
         };
         var d = document, s = d.createElement('script');
         s.src = 'https://ihong-1.disqus.com/embed.js';

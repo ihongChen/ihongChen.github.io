@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="推薦模型,ANN,鄰近法," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="起頭這邊想討論的是，當商品的數量大到一個等級(可能是需要十萬以上..)的時候，去比對每個點來找最近鄰的方法會非常的低效。用例子來說明原理還是最好的: 如果有500萬個商品，每個商品的特徵向量表示$\in \textbf{R}^{100}$，我們想要尋找其中一個商品最鄰近的前十個。 123456789101112131415161718import numpy as npfrom tqdm impo">
+<meta name="keywords" content="推薦模型,ANN,鄰近法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="推薦模型-近似鄰近法(Approximation Nearest Neighbors)">
+<meta property="og:url" content="http://yoursite.com/2018/01/26/rec3-ann/index.html">
+<meta property="og:site_name" content="喵喵抄人">
+<meta property="og:description" content="起頭這邊想討論的是，當商品的數量大到一個等級(可能是需要十萬以上..)的時候，去比對每個點來找最近鄰的方法會非常的低效。用例子來說明原理還是最好的: 如果有500萬個商品，每個商品的特徵向量表示$\in \textbf{R}^{100}$，我們想要尋找其中一個商品最鄰近的前十個。 123456789101112131415161718import numpy as npfrom tqdm impo">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://yoursite.com/2018/01/26/rec3-ann/ann1.png">
+<meta property="og:image" content="http://yoursite.com/2018/01/26/rec3-ann/ann2.png">
+<meta property="og:image" content="http://yoursite.com/2018/01/26/rec3-ann/ann3.png">
+<meta property="og:image" content="https://media.sketchfab.com/urls/5dcebcfaedbd4e7b8a27bd1ae55f1ac3/dist/thumbnails/42158696f2c24e63b5c22b57f7b79739/256x144.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/9120703a4aee4c2cb0313a9ca3e1e1a3/dist/thumbnails/52eb1132bd61459eb0983bd1e3fd256c/256x144.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/efe433deeeba4588bc089bba71fef9a5/dist/thumbnails/8bbd97ec0c3f481787694ca8d33211c4/854.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/18d38b440a9647059983c0e064b54948/dist/thumbnails/4cf3dbf1096d4d299c6181ec8f67a149/100x100.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/07f6a9a06db44bdb89b67a41f1fd72c2/dist/thumbnails/55ab6aa136e64643a5afa9f472bfdea0/864x486.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/5d2f4e1c07bf4c61a6d49c3b10907b5b/dist/thumbnails/6d8396c874994608a66e437076aeca4d/854.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/f628b75a1a4c40188fa8d6de224276ec/dist/thumbnails/43b1aac22a5443e39e4299032e3dddf8/bd729eb3c67e4976914927a113a1dcfc.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/6a6600c5890a42ed8fb53eda479af371/dist/thumbnails/d51643ffb847445886444324756fde8d/854.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/93d3937e89ba48ea93623e0252387c0a/dist/thumbnails/bdd20344d9934036b8216fe4ce00e88e/640.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/82367f6a22644f6f88b462077611559e/dist/thumbnails/9041c2a16d43466aaf81ee145ed20d3f/864x486.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/5dcebcfaedbd4e7b8a27bd1ae55f1ac3/dist/thumbnails/42158696f2c24e63b5c22b57f7b79739/256x144.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/9120703a4aee4c2cb0313a9ca3e1e1a3/dist/thumbnails/52eb1132bd61459eb0983bd1e3fd256c/256x144.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/efe433deeeba4588bc089bba71fef9a5/dist/thumbnails/8bbd97ec0c3f481787694ca8d33211c4/854.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/18d38b440a9647059983c0e064b54948/dist/thumbnails/4cf3dbf1096d4d299c6181ec8f67a149/100x100.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/5d2f4e1c07bf4c61a6d49c3b10907b5b/dist/thumbnails/6d8396c874994608a66e437076aeca4d/854.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/93d3937e89ba48ea93623e0252387c0a/dist/thumbnails/bdd20344d9934036b8216fe4ce00e88e/640.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/82367f6a22644f6f88b462077611559e/dist/thumbnails/9041c2a16d43466aaf81ee145ed20d3f/864x486.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/461ded4e36b3454f92654e14a8d524b7/dist/thumbnails/746423aebb3147f4b854473419ba4800/854.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/0ad160d8515949169e2f09e912879a20/dist/thumbnails/6e85aeecf94c4ebb90b7127b7b9e819d/854.jpeg">
+<meta property="og:image" content="https://media.sketchfab.com/urls/ebc929ad5e814a22a9acf295a3d2c73b/dist/thumbnails/0ccc5d368b57471a9e1161e69e94500e/854.jpeg">
+<meta property="og:updated_time" content="2018-01-26T15:18:17.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="推薦模型-近似鄰近法(Approximation Nearest Neighbors)">
+<meta name="twitter:description" content="起頭這邊想討論的是，當商品的數量大到一個等級(可能是需要十萬以上..)的時候，去比對每個點來找最近鄰的方法會非常的低效。用例子來說明原理還是最好的: 如果有500萬個商品，每個商品的特徵向量表示$\in \textbf{R}^{100}$，我們想要尋找其中一個商品最鄰近的前十個。 123456789101112131415161718import numpy as npfrom tqdm impo">
+<meta name="twitter:image" content="http://yoursite.com/2018/01/26/rec3-ann/ann1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/01/26/rec3-ann/"/>
+
+
+
+
+
+  <title>推薦模型-近似鄰近法(Approximation Nearest Neighbors) | 喵喵抄人</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">喵喵抄人</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/26/rec3-ann/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="喵喵抄人">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="喵喵抄人">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">推薦模型-近似鄰近法(Approximation Nearest Neighbors)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-01-26T21:40:47+08:00">
+                2018-01-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/26/rec3-ann/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2018/01/26/rec3-ann/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="起頭"><a href="#起頭" class="headerlink" title="起頭"></a>起頭</h1><p>這邊想討論的是，當商品的數量大到一個<strong>等級</strong>(可能是需要十萬以上..)的時候，去比對每個點來找最近鄰的方法會非常的低效。用例子來說明原理還是最好的:</p>
+<p>如果有500萬個商品，每個商品的特徵向量表示$\in \textbf{R}^{100}$，我們想要尋找其中一個商品最鄰近的前十個。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> tqdm <span class="keyword">import</span> tqdm</span><br><span class="line"></span><br><span class="line">items = int(<span class="number">5</span>*<span class="number">1e6</span>) <span class="comment">#500萬</span></span><br><span class="line">factor = <span class="number">100</span></span><br><span class="line">x = np.random.rand(items,factor) <span class="comment">## 記憶體~4GB</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TopRelated</span>:</span></span><br><span class="line">    <span class="comment">## 利用向量內積，查找最鄰近的物品(cosine based)</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, items_factors)</span>:</span></span><br><span class="line">        <span class="comment">## 初始化需要正規化物品向量</span></span><br><span class="line">        norms = np.linalg.norm(items_factors, axis=<span class="number">1</span>)</span><br><span class="line">        self.factors = items_factors / norms[:, np.newaxis]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_related</span><span class="params">(self, itemid, N=<span class="number">10</span>)</span>:</span></span><br><span class="line">        scores = self.factors.dot(self.factors[itemid]) <span class="comment"># cosine </span></span><br><span class="line">        best = np.argpartition(scores, -N)[-N:] <span class="comment"># partion --&gt; 小於此的放在左側</span></span><br><span class="line">        <span class="keyword">return</span> sorted(zip(best, scores[best]), key=<span class="keyword">lambda</span> x: -x[<span class="number">1</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">top_related = TopRelated(x)</span><br><span class="line">%time top_related.get_related(<span class="number">100</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>Wall time: 266 ms
+</code></pre><p>對每個item計算最鄰近的10個item需要耗時280ms,估計對500萬個items計算需要至少 380hr</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">round(items *<span class="number">0.28</span> /<span class="number">3600</span>,<span class="number">2</span>)<span class="comment"># hour</span></span><br></pre></td></tr></table></figure>
+<pre><code>388.89
+</code></pre><p>如果我們需要對海量的商品尋找最接近的，透過線性的查找(暴力法)會非常耗時。這時候可以透過近似近鄰(ANN)方法來幫助…</p>
+<ul>
+<li><p>先看怎麼使用套件<a href="https://github.com/spotify/annoy" target="_blank" rel="noopener">annoy</a>。套件作者是超級大大(自己google一下)這個專案有<strong>三千多星!!!!</strong></p>
+</li>
+<li><p>熟悉一下用法，之後會講原理。</p>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> annoy</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ApproximateTopRelated</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, items_factors, treecount=<span class="number">20</span>)</span>:</span></span><br><span class="line">        index = annoy.AnnoyIndex(items_factors.shape[<span class="number">1</span>], <span class="string">'angular'</span>)</span><br><span class="line">        <span class="keyword">for</span> i, row <span class="keyword">in</span> tqdm(enumerate(items_factors)):</span><br><span class="line">            index.add_item(i, row)</span><br><span class="line">        index.build(treecount)</span><br><span class="line">        self.index = index</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_related</span><span class="params">(self, itemid, N=<span class="number">10</span>)</span>:</span></span><br><span class="line">        neighbours = self.index.get_nns_by_item(itemid, N)</span><br><span class="line">        <span class="keyword">return</span> sorted(((other, <span class="number">1</span> - self.index.get_distance(itemid, other))</span><br><span class="line">                      <span class="keyword">for</span> other <span class="keyword">in</span> neighbours), key=<span class="keyword">lambda</span> x: -x[<span class="number">1</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 不要在自己的本機/筆電執行，耗用8G以上記憶體</span></span><br><span class="line">%time app_top_related = ApproximateTopRelated(x)</span><br></pre></td></tr></table></figure>
+<pre><code>5000000it [01:08, 72851.61it/s]
+Wall time: 13min 15s
+</code></pre><p>annoy使用的時候需要先建立一個索引二元樹，然後根據此樹作</p>
+<ol>
+<li>查找</li>
+<li>意外分支</li>
+<li>random tree</li>
+</ol>
+<p>建立這個index耗時13分15秒，而透過建立出來的index來查找最近的物品，幾乎是不太耗時的。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%time app_top_related.get_related(<span class="number">100</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>Wall time: 0 ns
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">t0 = time.time()</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(items):</span><br><span class="line">    app_top_related.get_related(i)</span><br><span class="line">t1 = time.time()</span><br><span class="line">print(<span class="string">'time elapse :&#123;&#125;s'</span>.format(t1-t0))</span><br></pre></td></tr></table></figure>
+<pre><code>time elapse :999.8614735603333s
+</code></pre><p>與之前相比500萬個商品查找所有的（近似）最近鄰只需要耗時約<code>13 + 16 = 29 分</code>與直接計算所有商品間的內積並排序，效能上至少相差數百倍。</p>
+<h1 id="近似最近鄰"><a href="#近似最近鄰" class="headerlink" title="近似最近鄰"></a>近似最近鄰</h1><p>抄襲自annoy作者的<a href="https://erikbern.com/2015/10/01/nearest-neighbors-and-vector-models-part-2-how-to-search-in-high-dimensional-spaces.html" target="_blank" rel="noopener">blog</a>,可以的話看原文講的非常清楚，這裡只是做個中文筆記而已。</p>
+<hr>
+<h2 id="建立二元樹"><a href="#建立二元樹" class="headerlink" title="建立二元樹"></a>建立二元樹</h2><p>如果有資料點如下，<br><img src="/2018/01/26/rec3-ann/ann1.png"><br>想要建立一種資料結構，使得搜尋最鄰近的點複雜度不高於$\mathcal{O}(\log{}n)$ </p>
+<ol>
+<li>隨意任選兩點，切出一與兩點等距之超平面    </li>
+<li>在新切出的二平面中，繼續任選兩點切出等具超平面    </li>
+<li>持續切割平面直到，使任平面中所含的點不大於<em>k</em></li>
+</ol>
+<h2 id="搜尋過程"><a href="#搜尋過程" class="headerlink" title="搜尋過程"></a>搜尋過程</h2><p>初始的紅色小點代表查詢的位置<br><img src="/2018/01/26/rec3-ann/ann2.png"></p>
+<ol>
+<li>按照二元樹找尋最鄰近每個節點(node)的位置，此時查詢的長度不會超過$\log{}n$</li>
+<li>允許<strong>例外</strong>發生，使用priority Queue設計一閥值，大於此值node可以走不同的分支。</li>
+</ol>
+<h2 id="隨機樹"><a href="#隨機樹" class="headerlink" title="隨機樹"></a>隨機樹</h2><p>除此之外允許產生隨機的二元樹狀結構(random tree)</p>
+<img src="/2018/01/26/rec3-ann/ann3.png">
+<p>(ps.看原始網頁有<a href="https://erikbern.com/assets/2015/09/animated.gif" target="_blank" rel="noopener">動圖</a>)</p>
+<ol>
+<li>針對一個點同時搜尋不同的樹<blockquote>
+<p>We can search all trees at the same time using one single priority queue.</p>
+</blockquote>
+</li>
+<li>根據幾棵樹找到的鄰近點再做point-wise計算</li>
+<li>取前N名(topN)</li>
+</ol>
+<h1 id="實作3D模型資料"><a href="#實作3D模型資料" class="headerlink" title="實作3D模型資料"></a>實作3D模型資料</h1><p>讀資料/清資料(again…)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np </span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> csv</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">from</span> tqdm <span class="keyword">import</span> tqdm</span><br><span class="line">sys.path.append(<span class="string">'../'</span>)</span><br><span class="line"><span class="keyword">from</span> rec_helper <span class="keyword">import</span> *</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">df = pd.read_csv(<span class="string">'../rec-a-sketch/model_likes_anon.psv'</span>,</span><br><span class="line">                 sep=<span class="string">'|'</span>,quotechar=<span class="string">'\\'</span>,quoting=csv.QUOTE_MINIMAL)</span><br><span class="line">print(df.count())</span><br><span class="line">df.drop_duplicates(inplace=<span class="keyword">True</span>)</span><br><span class="line">print(df.count())</span><br><span class="line">df = threshold_interaction(df,rowname=<span class="string">'uid'</span>,colname=<span class="string">'mid'</span>,row_min=<span class="number">5</span>,col_min=<span class="number">10</span>)</span><br><span class="line">inter,uid_to_idx,idx_to_uid,mid_to_idx,idx_to_mid=df_to_spmatrix(df,<span class="string">'uid'</span>,<span class="string">'mid'</span>)</span><br><span class="line">train,test, user_idxs = train_test_split(inter,split_count=<span class="number">1</span>,fraction=<span class="number">0.2</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>modelname    632832
+mid          632832
+uid          632832
+dtype: int64
+modelname    632677
+mid          632677
+uid          632677
+dtype: int64
+Starting interactions info
+Number of rows: 62583
+Number of cols: 28806
+Sparsity: 0.04%
+Ending interactions info
+Number of rows: 13496
+Number of columns: 13618
+Sparsity: 0.25%
+</code></pre><h2 id="implicit套件"><a href="#implicit套件" class="headerlink" title="implicit套件"></a>implicit套件</h2><p>用來計算items_embedding</p>
+<ol>
+<li>比較ann與暴力法效能</li>
+<li>人眼看一下相似性結果</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> implicit</span><br><span class="line">model = implicit.als.AlternatingLeastSquares(factors=<span class="number">50</span>,regularization=<span class="number">0.01</span>)</span><br><span class="line">train64 = train.astype(np.float64)</span><br><span class="line">model.fit(train64.T)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> tqdm(range(train.shape[<span class="number">1</span>])):</span><br><span class="line">    model.similar_items(i)</span><br></pre></td></tr></table></figure>
+<pre><code>100%|██████████████████████████████████| 13618/13618 [00:04&lt;00:00, 3350.27it/s]
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">approx_topRelated_item = ApproximateTopRelated(model.item_factors)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> tqdm(range(train.shape[<span class="number">1</span>])):</span><br><span class="line">    approx_topRelated_item.get_related(i)</span><br></pre></td></tr></table></figure>
+<pre><code>13618it [00:00, 108942.13it/s]
+100%|█████████████████████████████████| 13618/13618 [00:01&lt;00:00, 12816.39it/s]
+</code></pre><p>直接呼叫套件下的<code>similar_items</code>方法:</p>
+<blockquote>
+<p>3,350 items/s</p>
+</blockquote>
+<p>使用近似鄰近法</p>
+<blockquote>
+<p>12,816 items/s</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># approx_top_related_items = approx_topRelated_item.get_related(20)</span></span><br><span class="line"><span class="comment"># top_related_items = top_related.get_related(20)</span></span><br></pre></td></tr></table></figure>
+<h2 id="工人智慧"><a href="#工人智慧" class="headerlink" title="工人智慧"></a>工人智慧</h2><p>肉眼看看結果</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> IPython.display <span class="keyword">import</span> HTML, display</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_thumbnails</span><span class="params">(top_related_items, idx, idx_to_mid, N=<span class="number">10</span>)</span>:</span></span><br><span class="line"><span class="comment">#     row = sim[idx, :].A.ravel()</span></span><br><span class="line">    topNitems,scores = zip(*top_related_items.get_related(idx))</span><br><span class="line">    thumbs = []</span><br><span class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> topNitems:         </span><br><span class="line">        response = requests.get(<span class="string">'https://sketchfab.com/i/models/&#123;&#125;'</span>.format(idx_to_mid[x])).json()</span><br><span class="line">        thumb = [x[<span class="string">'url'</span>] <span class="keyword">for</span> x <span class="keyword">in</span> response[<span class="string">'thumbnails'</span>][<span class="string">'images'</span>]]</span><br><span class="line"><span class="comment">#         print(thumb)</span></span><br><span class="line"><span class="comment">#         thumb = [x['url'] for x in response['thumbnails']['images'] if x['width'] == 200 and x['height']==200]</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> thumb:</span><br><span class="line">            print(<span class="string">'no thumbnail'</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            thumb = thumb[<span class="number">-2</span>]</span><br><span class="line">        thumbs.append(thumb)</span><br><span class="line">    <span class="keyword">return</span> thumbs</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">display_item</span><span class="params">(thumbs,origin_id,N=<span class="number">5</span>)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>: </span><br><span class="line">        print(<span class="string">'原圖======'</span>)</span><br><span class="line">        thumb_html = <span class="string">'&lt;img src='</span>+ <span class="string">'\"'</span>+thumbs[<span class="number">0</span>]+<span class="string">'\"&gt;'</span> </span><br><span class="line">        </span><br><span class="line">    <span class="keyword">except</span> TypeError:</span><br><span class="line">        print(<span class="string">'oops, 找不到小圖!!!'</span>)</span><br><span class="line">        response = requests.get(<span class="string">'https://sketchfab.com/i/models/&#123;&#125;'</span>.format(idx_to_mid[origin_id])).json()</span><br><span class="line">        thumb = [x[<span class="string">'url'</span>] <span class="keyword">for</span> x <span class="keyword">in</span> response[<span class="string">'thumbnails'</span>][<span class="string">'images'</span>]][<span class="number">-2</span>]</span><br><span class="line">        thumb_html = <span class="string">'&lt;img src= "&#123;&#125;"/&gt;'</span>.format(thumb)</span><br><span class="line">        print(<span class="string">'稍大的圖===='</span>)</span><br><span class="line">    <span class="keyword">for</span> url <span class="keyword">in</span> thumbs[<span class="number">1</span>:]:        </span><br><span class="line">        <span class="keyword">if</span> url:</span><br><span class="line">            thumb_html += <span class="string">""" &lt;img style='width:120px;margin:0px;float:left;border:1px solid black;' src='&#123;&#125;' /&gt;"""</span>.format(url)            </span><br><span class="line">    <span class="keyword">return</span> thumb_html</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">itemid = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">related_items_url = get_thumbnails(top_related,itemid,idx_to_mid)</span><br><span class="line">approx_related_items_url = get_thumbnails(approx_topRelated_item,itemid,idx_to_mid)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">print(<span class="string">'暴力法--------'</span>)</span><br><span class="line">HTML(display_item(related_items_url,itemid))</span><br></pre></td></tr></table></figure>
+<h3 id="暴力法"><a href="#暴力法" class="headerlink" title="暴力法"></a>暴力法</h3><p>=====原圖======</p>
+<p><img src="https://media.sketchfab.com/urls/5dcebcfaedbd4e7b8a27bd1ae55f1ac3/dist/thumbnails/42158696f2c24e63b5c22b57f7b79739/256x144.jpeg" style="width: 250px;"> </p>
+<p>=====相似圖=====</p>
+<p><img src="https://media.sketchfab.com/urls/9120703a4aee4c2cb0313a9ca3e1e1a3/dist/thumbnails/52eb1132bd61459eb0983bd1e3fd256c/256x144.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/efe433deeeba4588bc089bba71fef9a5/dist/thumbnails/8bbd97ec0c3f481787694ca8d33211c4/854.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/18d38b440a9647059983c0e064b54948/dist/thumbnails/4cf3dbf1096d4d299c6181ec8f67a149/100x100.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/07f6a9a06db44bdb89b67a41f1fd72c2/dist/thumbnails/55ab6aa136e64643a5afa9f472bfdea0/864x486.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/5d2f4e1c07bf4c61a6d49c3b10907b5b/dist/thumbnails/6d8396c874994608a66e437076aeca4d/854.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/f628b75a1a4c40188fa8d6de224276ec/dist/thumbnails/43b1aac22a5443e39e4299032e3dddf8/bd729eb3c67e4976914927a113a1dcfc.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/6a6600c5890a42ed8fb53eda479af371/dist/thumbnails/d51643ffb847445886444324756fde8d/854.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/93d3937e89ba48ea93623e0252387c0a/dist/thumbnails/bdd20344d9934036b8216fe4ce00e88e/640.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/82367f6a22644f6f88b462077611559e/dist/thumbnails/9041c2a16d43466aaf81ee145ed20d3f/864x486.jpeg" style="width: 250px;"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">print(<span class="string">'近似法--------'</span>)</span><br><span class="line">HTML(display_item(approx_related_items_url,itemid))</span><br></pre></td></tr></table></figure>
+<h3 id="近似法"><a href="#近似法" class="headerlink" title="近似法"></a>近似法</h3><p>=====原圖======</p>
+<p><img src="https://media.sketchfab.com/urls/5dcebcfaedbd4e7b8a27bd1ae55f1ac3/dist/thumbnails/42158696f2c24e63b5c22b57f7b79739/256x144.jpeg"> </p>
+<p>=====近似圖 =====</p>
+<p><img src="https://media.sketchfab.com/urls/9120703a4aee4c2cb0313a9ca3e1e1a3/dist/thumbnails/52eb1132bd61459eb0983bd1e3fd256c/256x144.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/efe433deeeba4588bc089bba71fef9a5/dist/thumbnails/8bbd97ec0c3f481787694ca8d33211c4/854.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/18d38b440a9647059983c0e064b54948/dist/thumbnails/4cf3dbf1096d4d299c6181ec8f67a149/100x100.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/5d2f4e1c07bf4c61a6d49c3b10907b5b/dist/thumbnails/6d8396c874994608a66e437076aeca4d/854.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/93d3937e89ba48ea93623e0252387c0a/dist/thumbnails/bdd20344d9934036b8216fe4ce00e88e/640.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/82367f6a22644f6f88b462077611559e/dist/thumbnails/9041c2a16d43466aaf81ee145ed20d3f/864x486.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/461ded4e36b3454f92654e14a8d524b7/dist/thumbnails/746423aebb3147f4b854473419ba4800/854.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/0ad160d8515949169e2f09e912879a20/dist/thumbnails/6e85aeecf94c4ebb90b7127b7b9e819d/854.jpeg" style="width: 250px;"> <img src="https://media.sketchfab.com/urls/ebc929ad5e814a22a9acf295a3d2c73b/dist/thumbnails/0ccc5d368b57471a9e1161e69e94500e/854.jpeg" style="width: 250px;"></p>
+<h1 id="小結"><a href="#小結" class="headerlink" title="小結"></a>小結</h1><p>結果來看近似的結果與實際差異並不太大，當然跟喵喵才觀察一兩個物品的有關係。如果商品的數量很大，在乎在線上搜尋的即時性，可以改用近似近鄰法加速搜尋，不過在小樣本如果更在乎準確性，大可不必使用這個技巧。</p>
+<p>另外如果我們要對用戶做推薦，勢必會計算向量內積$\textbf{X}_u \cdot \textbf{y}_i$然後對所有商品重排序，這個在線上也不太可行。因此微軟在弄<a href="https://www.microsoft.com/en-us/research/publication/speeding-up-the-xbox-recommender-system-using-a-euclidean-transformation-for-inner-product-spaces/" target="_blank" rel="noopener">xbox遊戲推薦</a>的問題時，提出一種高效的手法。這部分有機會再談嚕…</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/推薦模型/" rel="tag"># 推薦模型</a>
+          
+            <a href="/tags/ANN/" rel="tag"># ANN</a>
+          
+            <a href="/tags/鄰近法/" rel="tag"># 鄰近法</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/25/rec2-als/" rel="next" title="推薦模型-ALS算法(Alternative Least Square)">
+                <i class="fa fa-chevron-left"></i> 推薦模型-ALS算法(Alternative Least Square)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">喵喵抄人</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#起頭"><span class="nav-number">1.</span> <span class="nav-text">起頭</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#近似最近鄰"><span class="nav-number">2.</span> <span class="nav-text">近似最近鄰</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#建立二元樹"><span class="nav-number">2.1.</span> <span class="nav-text">建立二元樹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#搜尋過程"><span class="nav-number">2.2.</span> <span class="nav-text">搜尋過程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#隨機樹"><span class="nav-number">2.3.</span> <span class="nav-text">隨機樹</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#實作3D模型資料"><span class="nav-number">3.</span> <span class="nav-text">實作3D模型資料</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#implicit套件"><span class="nav-number">3.1.</span> <span class="nav-text">implicit套件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工人智慧"><span class="nav-number">3.2.</span> <span class="nav-text">工人智慧</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#暴力法"><span class="nav-number">3.2.1.</span> <span class="nav-text">暴力法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#近似法"><span class="nav-number">3.2.2.</span> <span class="nav-text">近似法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小結"><span class="nav-number">4.</span> <span class="nav-text">小結</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">喵喵抄人</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://ihong-1.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2018/01/26/rec3-ann/';
+          this.page.identifier = '2018/01/26/rec3-ann/';
+          this.page.title = '推薦模型-近似鄰近法(Approximation Nearest Neighbors)';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://ihong-1.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
