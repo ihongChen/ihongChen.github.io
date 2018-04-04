@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="pipeline,transformer," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Pipeline &amp;amp; Transformer這篇內容是來自於這裡詳細介紹pipeline&amp;amp;Transformer用法。非常推薦能看一下原文，這邊只是按著投影片例子重跑一次。 在整理資料的時候，其實都喜歡所見即所得(what you type is what you see)。但是這種資料整理的方式在日後比較難管理，比如說，下圖是喵喵在整理資料特徵的一小段code  不用說別人看不懂">
+<meta name="keywords" content="pipeline,transformer">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pipeline＆Transformer">
+<meta property="og:url" content="http://yoursite.com/2018/04/04/Pipeline-Transformer/index.html">
+<meta property="og:site_name" content="喵喵抄人">
+<meta property="og:description" content="Pipeline &amp;amp; Transformer這篇內容是來自於這裡詳細介紹pipeline&amp;amp;Transformer用法。非常推薦能看一下原文，這邊只是按著投影片例子重跑一次。 在整理資料的時候，其實都喜歡所見即所得(what you type is what you see)。但是這種資料整理的方式在日後比較難管理，比如說，下圖是喵喵在整理資料特徵的一小段code  不用說別人看不懂">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://yoursite.com/2018/04/04/Pipeline-Transformer/img/feature_eng_messy.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/04/Pipeline-Transformer/img/out2_df.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/04/Pipeline-Transformer/img/hist.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/04/Pipeline-Transformer/img/hist_log.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/04/Pipeline-Transformer/img/out22_df.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/04/Pipeline-Transformer/img/out24_df.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/04/Pipeline-Transformer/img/out25_df.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/04/Pipeline-Transformer/img/out27_df.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/04/Pipeline-Transformer/img/out31_df.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/04/Pipeline-Transformer/img/out32_df.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/04/Pipeline-Transformer/img/out37_df.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/04/Pipeline-Transformer/img/out39_df.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/04/Pipeline-Transformer/img/out46_df.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/04/Pipeline-Transformer/img/out49_df.png">
+<meta property="og:image" content="http://yoursite.com/2018/04/04/Pipeline-Transformer/img/out50_df.png">
+<meta property="og:updated_time" content="2018-04-04T08:56:50.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Pipeline＆Transformer">
+<meta name="twitter:description" content="Pipeline &amp;amp; Transformer這篇內容是來自於這裡詳細介紹pipeline&amp;amp;Transformer用法。非常推薦能看一下原文，這邊只是按著投影片例子重跑一次。 在整理資料的時候，其實都喜歡所見即所得(what you type is what you see)。但是這種資料整理的方式在日後比較難管理，比如說，下圖是喵喵在整理資料特徵的一小段code  不用說別人看不懂">
+<meta name="twitter:image" content="http://yoursite.com/2018/04/04/Pipeline-Transformer/img/feature_eng_messy.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/04/04/Pipeline-Transformer/"/>
+
+
+
+
+
+  <title>Pipeline＆Transformer | 喵喵抄人</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">喵喵抄人</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/04/Pipeline-Transformer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="喵喵抄人">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="喵喵抄人">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Pipeline＆Transformer</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-04-04T16:08:16+08:00">
+                2018-04-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/資料整理/" itemprop="url" rel="index">
+                    <span itemprop="name">資料整理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/04/04/Pipeline-Transformer/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2018/04/04/Pipeline-Transformer/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Pipeline-amp-Transformer"><a href="#Pipeline-amp-Transformer" class="headerlink" title="Pipeline &amp; Transformer"></a>Pipeline &amp; Transformer</h1><p>這篇內容是來自於<a href="https://github.com/jem1031/pandas-pipelines-custom-transformers" target="_blank" rel="noopener">這裡</a>詳細介紹<code>pipeline</code>&amp;<code>Transformer</code>用法。非常推薦能看一下原文，這邊只是按著投影片例子重跑一次。</p>
+<p>在整理資料的時候，其實都喜歡所見即所得(what you type is what you see)。但是這種資料整理的方式在日後比較難管理，比如說，下圖是喵喵在整理資料特徵的一小段<code>code</code></p>
+<img src="/2018/04/04/Pipeline-Transformer/img/feature_eng_messy.png">
+<p>不用說別人看不懂，喵喵自己事後在看的時候也是，暈頭轉向/不知所云/亂七八糟…雖然一時的邏輯都說得通，但是這種用後即丟的程式碼。似乎很難維護。</p>
+<blockquote>
+<p>“Any fool can write code that a computer can understand. Good programmers write code that humans can understand.” — Martin Fowler</p>
+</blockquote>
+<p>雖然說我的工作不是寫出優雅乾淨的程式碼(通常髒活<del>dirty work</del>成分居多)，可是也應該期許自己不是個蠢蛋吧XD</p>
+<hr>
+<p>要能管理資料清理，就必須把一些方法盡可能的抽象化，易於重複使用。這篇的主旨是在說明這件事情，如何利用<code>scikit-learn</code>裡面的<code>pipeline</code>和<code>transformer</code>來<strong>優雅地</strong>完成(進入模型前)的資料清洗。</p>
+<p>如果想把資料前處理，抽象成為人類能理解的方式，例如</p>
+<ol>
+<li><p>類別型資料</p>
+<ul>
+<li>取出欄位</li>
+<li>one hot encoding</li>
+</ul>
+</li>
+<li><p>數值型資料</p>
+<ul>
+<li>取出欄位</li>
+<li>填補缺失值</li>
+<li>轉成log scale</li>
+</ul>
+</li>
+<li>標準化資料(Standarize)</li>
+</ol>
+<p>這樣每個小工作就變成清晰且易於除錯了。</p>
+<hr>
+<h1 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h1><p>範例中我們要對欄位<code>permit_status</code>做分類的預測，由於我們只需要熟悉資料清理<code>pipeline</code>的使用，用最簡單的方式做模型建立(也不需要搞清楚這個資料集到底在幹嘛XXD)。</p>
+<ol>
+<li>只使用<code>attendance</code>作為變數(<code>x</code>)</li>
+<li>模型為LogisticRegression</li>
+<li>計算auc score</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd </span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np </span><br><span class="line">%matplotlib inline</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">df = pd.read_csv(<span class="string">'./Special_Events_Permits_2016.csv'</span>)</span><br><span class="line">df.head().T</span><br></pre></td></tr></table></figure>
+<img src="/2018/04/04/Pipeline-Transformer/img/out2_df.png">
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># outcome : permit_status</span></span><br><span class="line">df.permit_status.unique()</span><br></pre></td></tr></table></figure>
+<pre><code>array([&apos;Complete&apos;, &apos;Cancelled&apos;, &apos;In Process&apos;], dtype=object)
+</code></pre><p>切切測試/訓練集</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line">df_train, df_test = train_test_split(df,random_state= <span class="number">4321</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df_train.shape</span><br></pre></td></tr></table></figure>
+<pre><code>(396, 15)
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df_test.shape</span><br></pre></td></tr></table></figure>
+<pre><code>(133, 15)
+</code></pre><p>數值化<code>y_train</code> &amp; <code>y_test</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np </span><br><span class="line">y_train = np.where(df_train.permit_status == <span class="string">'Complete'</span>,<span class="number">1</span>,<span class="number">0</span>)</span><br><span class="line">X_train = df_train[[<span class="string">'attendance'</span>]].fillna(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">y_test = np.where(df_test.permit_status == <span class="string">'Complete'</span>,<span class="number">1</span>,<span class="number">0</span>)</span><br><span class="line">X_test = df_test[[<span class="string">'attendance'</span>]].fillna(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<p>模型亂入</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LogisticRegression</span><br><span class="line">model = LogisticRegression(random_state=<span class="number">5678</span>)</span><br><span class="line"></span><br><span class="line">model.fit(X_train, y_train)</span><br><span class="line">y_pred_train = model.predict(X_train)</span><br><span class="line">p_pred_train = model.predict_proba(X_train)[:,<span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+<p>測試集AUC score </p>
+<ul>
+<li>model預測與baseline比較</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_auc_score</span><br><span class="line"></span><br><span class="line">p_baseline = [y_train.mean()]*len(y_test)</span><br><span class="line">p_pred_test = model.predict_proba(X_test)[:,<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">auc_base = roc_auc_score(y_test, p_baseline) </span><br><span class="line">auc_test = roc_auc_score(y_test, p_pred_test)</span><br><span class="line"></span><br><span class="line">print(<span class="string">'baseline auc:&#123;&#125;'</span>.format(auc_base))</span><br><span class="line">print(<span class="string">'test auc:&#123;:.2f&#125;'</span>.format(auc_test))</span><br></pre></td></tr></table></figure>
+<pre><code>baseline auc:0.5
+test auc:0.58
+</code></pre><h1 id="Transformers"><a href="#Transformers" class="headerlink" title="Transformers"></a>Transformers</h1><p>比較一下兩種在sklearn裡面很好用的基礎類別</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Transformer</th>
+<th style="text-align:left">Estimator</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">資料清理/轉換</td>
+<td style="text-align:left">建模(modeling)</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>fit</code>:對訓練資料尋找適當參數</td>
+<td style="text-align:left"><code>fit</code>: 對訓練資料擬合尋找適當參數</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>transform</code>:作用在測試或訓練資料</td>
+<td style="text-align:left"><code>predict</code>:作用在測試或訓練資料</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Transformer</th>
+<th style="text-align:left">Estimator</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>StandardScalar</code></td>
+<td style="text-align:left"><code>LogisticRegression</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>fit</code>對每個欄位(特徵)找到平均值,標準差</td>
+<td style="text-align:left"><code>fit</code>在羅吉斯回歸中找到符合公式的參數</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>transform</code>減去平均除以標準差(正規化)</td>
+<td style="text-align:left"><code>predict</code>塞入公式預測新資料</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## multiple transformer </span></span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> (Imputer, PolynomialFeatures, StandardScaler)</span><br></pre></td></tr></table></figure>
+<p>沒人想要者麼寫 ….醜到爆炸</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">imputer = Imputer()</span><br><span class="line">quadratic = PolynomialFeatures()</span><br><span class="line">standarizer = StandardScaler()</span><br><span class="line"></span><br><span class="line"><span class="comment"># </span></span><br><span class="line">X_train_imp = imputer.fit_transform(X_train)</span><br><span class="line">X_train_quad = quadratic.fit_transform(X_train_imp)</span><br><span class="line">X_train_final = standarizer.fit_transform(X_train_quad)</span><br><span class="line"></span><br><span class="line">X_test_imp = imputer.transform(X_test)</span><br><span class="line">X_test_quad = quadratic.transform(X_test_imp)</span><br><span class="line">X_test_final = standarizer.transform(X_test_quad)</span><br></pre></td></tr></table></figure>
+<p><code>Pipeline</code>把<code>transformer</code>動作串起來用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.pipeline <span class="keyword">import</span> Pipeline</span><br><span class="line"></span><br><span class="line">pipeline = Pipeline([</span><br><span class="line">    (<span class="string">'imputer'</span>, Imputer()),</span><br><span class="line">    (<span class="string">'quadratic'</span>, PolynomialFeatures()),</span><br><span class="line">    (<span class="string">'standardizer'</span>, StandardScaler())</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line">X_train_final = pipeline.fit_transform(X_train)</span><br><span class="line">X_test_final = pipeline.transform(X_test)</span><br></pre></td></tr></table></figure>
+<h2 id="Transformer-in-Parallel"><a href="#Transformer-in-Parallel" class="headerlink" title="Transformer in Parallel"></a>Transformer in Parallel</h2><p>如果想要把不同的特徵<code>join</code>起來</p>
+<ul>
+<li>用<code>FeatureUnion</code><ul>
+<li>注意資料型態可以吃<code>dataframe</code>但是輸出必定是<code>np.array</code></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.pipeline <span class="keyword">import</span> FeatureUnion</span><br><span class="line"></span><br><span class="line">feature_union = FeatureUnion([</span><br><span class="line">    (<span class="string">'fill_avg'</span>, Imputer(strategy=<span class="string">'mean'</span>)),</span><br><span class="line">    (<span class="string">'fill_mid'</span>, Imputer(strategy=<span class="string">'median'</span>)),</span><br><span class="line">    (<span class="string">'fill_freq'</span>, Imputer(strategy=<span class="string">'most_frequent'</span>))</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line">X_train_final = feature_union.fit_transform(X_train)</span><br><span class="line">X_test_final = feature_union.transform(X_test)</span><br></pre></td></tr></table></figure>
+<h2 id="eda"><a href="#eda" class="headerlink" title="eda"></a>eda</h2><p>觀察一下資料還想要處理幾件事情</p>
+<ul>
+<li>空值(null,nan…)</li>
+<li>Log scale</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># eda  -- </span></span><br><span class="line">df_train.event_location_park.value_counts(dropna=<span class="keyword">False</span>).head()</span><br></pre></td></tr></table></figure>
+<pre><code>NaN                364
+Magnuson Park        8
+Gas Works Park       5
+Occidental Park      3
+Volunteer Park       2
+Name: event_location_park, dtype: int64
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print(<span class="string">'# attendance is null'</span>,df_train.attendance.isnull().sum())</span><br></pre></td></tr></table></figure>
+<pre><code># attendance is null 3
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x=df_train.attendance</span><br><span class="line">x.plot(kind=<span class="string">'hist'</span>)</span><br></pre></td></tr></table></figure>
+<img src="/2018/04/04/Pipeline-Transformer/img/hist.png">
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">np.log(x).plot(kind=<span class="string">'hist'</span>,title=<span class="string">'hist of log attendance'</span>)</span><br></pre></td></tr></table></figure>
+<img src="/2018/04/04/Pipeline-Transformer/img/hist_log.png">
+<h3 id="如果我要的功能沒有在sklearn裡面的transformer怎麼辦？"><a href="#如果我要的功能沒有在sklearn裡面的transformer怎麼辦？" class="headerlink" title="如果我要的功能沒有在sklearn裡面的transformer怎麼辦？"></a>如果我要的功能沒有在<code>sklearn</code>裡面的<code>transformer</code>怎麼辦？</h3><ul>
+<li>利用<code>FunctionTransformer</code>，把任何函式<code>function</code>轉換成<code>transformer</code></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> FunctionTransformer</span><br><span class="line">logger = FunctionTransformer(np.log1p)</span><br><span class="line">X_log = logger.transform(X_train)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>或者利用繼承<code>TransformerMixin</code>自己編寫客製化<code>Transformer</code></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.base <span class="keyword">import</span> TransformerMixin</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Log1pTransformer</span><span class="params">(TransformerMixin)</span>:</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">fit</span><span class="params">(self, X, y=None)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">None</span></span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">transform</span><span class="params">(self, X)</span>:</span></span><br><span class="line">        Xlog = np.log1p(X)</span><br><span class="line">        <span class="keyword">return</span> Xlog</span><br></pre></td></tr></table></figure>
+<h1 id="客製化-Transformer"><a href="#客製化-Transformer" class="headerlink" title="客製化 Transformer"></a>客製化 <code>Transformer</code></h1><h2 id="One-Hot-Encoding"><a href="#One-Hot-Encoding" class="headerlink" title="One Hot Encoding"></a>One Hot Encoding</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.feature_extraction <span class="keyword">import</span> DictVectorizer</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CAT_FEATS = [</span><br><span class="line">    <span class="string">'permit_type'</span>, <span class="string">'event_category'</span>, <span class="string">'event_sub_category'</span>,</span><br><span class="line">    <span class="string">'event_location_park'</span>, <span class="string">'event_location_neighborhood'</span></span><br><span class="line">]</span><br><span class="line">test_df = df[CAT_FEATS].head()</span><br><span class="line">test_df</span><br></pre></td></tr></table></figure>
+<img src="/2018/04/04/Pipeline-Transformer/img/out22_df.png">
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DummyTransformer</span><span class="params">(TransformerMixin)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.dv = <span class="keyword">None</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">fit</span><span class="params">(self, X, y=None)</span>:</span></span><br><span class="line">        <span class="comment"># assumes all columns of X are strings</span></span><br><span class="line">        Xdict = X.to_dict(<span class="string">'records'</span>)</span><br><span class="line">        self.dv = DictVectorizer(sparse=<span class="keyword">False</span>)</span><br><span class="line">        self.dv.fit(Xdict)</span><br><span class="line">        <span class="keyword">return</span> self</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">transform</span><span class="params">(self, X)</span>:</span></span><br><span class="line">        <span class="comment"># assumes X is a DataFrame</span></span><br><span class="line">        Xdict = X.to_dict(<span class="string">'records'</span>)</span><br><span class="line">        Xt = self.dv.transform(Xdict)</span><br><span class="line">        cols = self.dv.get_feature_names()</span><br><span class="line">        Xdum = pd.DataFrame(Xt, index=X.index, columns=cols)</span><br><span class="line">        <span class="comment"># drop column indicating NaNs</span></span><br><span class="line">        nan_cols = [c <span class="keyword">for</span> c <span class="keyword">in</span> cols <span class="keyword">if</span> <span class="string">'='</span> <span class="keyword">not</span> <span class="keyword">in</span> c]</span><br><span class="line">        Xdum = Xdum.drop(nan_cols, axis=<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">return</span> Xdum</span><br></pre></td></tr></table></figure>
+<h2 id="DateFormatter"><a href="#DateFormatter" class="headerlink" title="DateFormatter"></a>DateFormatter</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DATE_FEATS = [<span class="string">'application_date'</span>, <span class="string">'event_start_date'</span>, <span class="string">'event_end_date'</span>]</span><br><span class="line">df[DATE_FEATS].head()</span><br></pre></td></tr></table></figure>
+<img src="/2018/04/04/Pipeline-Transformer/img/out24_df.png">
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df[DATE_FEATS].head().apply(pd.to_datetime)</span><br></pre></td></tr></table></figure>
+<img src="/2018/04/04/Pipeline-Transformer/img/out25_df.png">
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DateFormatter</span><span class="params">(TransformerMixin)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">fit</span><span class="params">(self, X, y=None)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">transformer</span><span class="params">(self, X)</span>:</span></span><br><span class="line">        Xdate = X.apply(pd.to_datetime)</span><br><span class="line">        <span class="keyword">return</span> Xdate</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">date = DateFormatter()</span><br><span class="line">temp_date_df = date.transformer(df[DATE_FEATS].head())</span><br><span class="line">temp_date_df</span><br></pre></td></tr></table></figure>
+<img src="/2018/04/04/Pipeline-Transformer/img/out27_df.png">
+<h2 id="Clip-transformer"><a href="#Clip-transformer" class="headerlink" title="Clip transformer"></a>Clip transformer</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClipTransformer</span><span class="params">(TransformerMixin)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, a_min, a_max)</span>:</span></span><br><span class="line">        self.a_min = a_min</span><br><span class="line">        self.a_max = a_max</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">fit</span><span class="params">(self, X, y=None)</span>:</span></span><br><span class="line">        <span class="comment"># stateless transformer</span></span><br><span class="line">        <span class="keyword">return</span> self</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">transform</span><span class="params">(self, X)</span>:</span></span><br><span class="line">        <span class="comment"># assumes X is a DataFrame</span></span><br><span class="line">        Xclip = np.clip(X, self.a_min, self.a_max)</span><br><span class="line">        <span class="keyword">return</span> Xclip</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">attendance = df.attendance</span><br><span class="line">clip = ClipTransformer(<span class="number">1000</span>,<span class="number">10000</span>)</span><br><span class="line">clip.transform(attendance).head()</span><br></pre></td></tr></table></figure>
+<pre><code>0     4500.0
+1    10000.0
+2     1000.0
+3     1000.0
+4     1000.0
+Name: attendance, dtype: float64
+</code></pre><h2 id="Column-Extractor"><a href="#Column-Extractor" class="headerlink" title="Column Extractor"></a>Column Extractor</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ColumnExtractor</span><span class="params">(TransformerMixin)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, cols)</span>:</span></span><br><span class="line">        self.cols = cols</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">fit</span><span class="params">(self, X, y=None)</span>:</span></span><br><span class="line">        <span class="comment"># stateless transformer</span></span><br><span class="line">        <span class="keyword">return</span> self</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">transform</span><span class="params">(self, X)</span>:</span></span><br><span class="line">        <span class="comment"># assumes X is a DataFrame</span></span><br><span class="line">        Xcols = X[self.cols]</span><br><span class="line">        <span class="keyword">return</span> Xcols</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CAT_FEATS = [</span><br><span class="line">    <span class="string">'permit_type'</span>, <span class="string">'event_category'</span>, <span class="string">'event_sub_category'</span>,</span><br><span class="line">    <span class="string">'event_location_park'</span>, <span class="string">'event_location_neighborhood'</span></span><br><span class="line">]</span><br><span class="line">cols = ColumnExtractor(CAT_FEATS)</span><br><span class="line">cols.transform(df.head())</span><br></pre></td></tr></table></figure>
+<img src="/2018/04/04/Pipeline-Transformer/img/out31_df.png">
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NUM_FEATS = [<span class="string">'attendance'</span>]</span><br><span class="line">cols = ColumnExtractor(NUM_FEATS)</span><br><span class="line">cols.transform(df.head())</span><br></pre></td></tr></table></figure>
+<img src="/2018/04/04/Pipeline-Transformer/img/out32_df.png">
+<h2 id="data-frame-版本的-FeatureUnion"><a href="#data-frame-版本的-FeatureUnion" class="headerlink" title="data frame 版本的 FeatureUnion"></a>data frame 版本的 FeatureUnion</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> functools <span class="keyword">import</span> reduce</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DFFeatureUnion</span><span class="params">(TransformerMixin)</span>:</span></span><br><span class="line">    <span class="comment"># FeatureUnion but for pandas DataFrames</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, transformer_list)</span>:</span></span><br><span class="line">        self.transformer_list = transformer_list</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">fit</span><span class="params">(self, X, y=None)</span>:</span></span><br><span class="line">        <span class="keyword">for</span> (name, t) <span class="keyword">in</span> self.transformer_list:</span><br><span class="line">            t.fit(X, y)</span><br><span class="line">        <span class="keyword">return</span> self</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">transform</span><span class="params">(self, X)</span>:</span></span><br><span class="line">        <span class="comment"># assumes X is a DataFrame</span></span><br><span class="line">        Xts = [t.transform(X) <span class="keyword">for</span> _, t <span class="keyword">in</span> self.transformer_list]</span><br><span class="line">        Xunion = reduce(<span class="keyword">lambda</span> X1, X2: pd.merge(X1, X2, left_index=<span class="keyword">True</span>, right_index=<span class="keyword">True</span>), Xts)</span><br><span class="line">        <span class="keyword">return</span> Xunion</span><br></pre></td></tr></table></figure>
+<h2 id="補零"><a href="#補零" class="headerlink" title="補零"></a>補零</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ZeroFillTransformer</span><span class="params">(TransformerMixin)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">fit</span><span class="params">(self, X, y=None)</span>:</span></span><br><span class="line">        <span class="comment"># stateless transformer</span></span><br><span class="line">        <span class="keyword">return</span> self</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">transform</span><span class="params">(self, X)</span>:</span></span><br><span class="line">        <span class="comment"># assumes X is a DataFrame</span></span><br><span class="line">        Xz = X.fillna(value=<span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> Xz</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">trans_list = [</span><br><span class="line">        (<span class="string">'categoricals'</span>, Pipeline([</span><br><span class="line">            (<span class="string">'extract'</span>, ColumnExtractor(CAT_FEATS)),</span><br><span class="line">            (<span class="string">'dummy'</span>, DummyTransformer())</span><br><span class="line">        ])),</span><br><span class="line">        (<span class="string">'numerics'</span>, Pipeline([</span><br><span class="line">            (<span class="string">'extract'</span>, ColumnExtractor(NUM_FEATS)),</span><br><span class="line">            (<span class="string">'zero_fill'</span>, ZeroFillTransformer()),</span><br><span class="line">            (<span class="string">'log'</span>, Log1pTransformer())</span><br><span class="line">        ]))</span><br><span class="line">    ]</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">feats=DFFeatureUnion(trans_list)</span><br><span class="line">feats.fit(df)</span><br><span class="line">feats_df = feats.transform(df)</span><br><span class="line">feats_df.head()</span><br></pre></td></tr></table></figure>
+<img src="/2018/04/04/Pipeline-Transformer/img/out37_df.png">
+<h2 id="data-frame-版本的-StandardScaler"><a href="#data-frame-版本的-StandardScaler" class="headerlink" title="data frame 版本的 StandardScaler"></a>data frame 版本的 StandardScaler</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DFStandardScaler</span><span class="params">(TransformerMixin)</span>:</span></span><br><span class="line">    <span class="comment"># StandardScaler but for pandas DataFrames</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.ss = <span class="keyword">None</span></span><br><span class="line">        self.mean_ = <span class="keyword">None</span></span><br><span class="line">        self.scale_ = <span class="keyword">None</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">fit</span><span class="params">(self, X, y=None)</span>:</span></span><br><span class="line">        self.ss = StandardScaler()</span><br><span class="line">        self.ss.fit(X)</span><br><span class="line">        self.mean_ = pd.Series(self.ss.mean_, index=X.columns)</span><br><span class="line">        self.scale_ = pd.Series(self.ss.scale_, index=X.columns)</span><br><span class="line">        <span class="keyword">return</span> self</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">transform</span><span class="params">(self, X)</span>:</span></span><br><span class="line">        <span class="comment"># assumes X is a DataFrame</span></span><br><span class="line">        Xss = self.ss.transform(X)</span><br><span class="line">        Xscaled = pd.DataFrame(Xss, index=X.index, columns=X.columns)</span><br><span class="line">        <span class="keyword">return</span> Xscaled</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">feats_scale = DFStandardScaler()</span><br><span class="line">feats_scale.fit(feats_df)</span><br><span class="line">feats_scale.transform(feats_df).head()</span><br></pre></td></tr></table></figure>
+<img src="/2018/04/04/Pipeline-Transformer/img/out39_df.png">
+<h1 id="組合成-pipeline"><a href="#組合成-pipeline" class="headerlink" title="組合成 pipeline"></a>組合成 pipeline</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">pipeline = Pipeline([</span><br><span class="line">    (<span class="string">'features'</span>, DFFeatureUnion([</span><br><span class="line">        (<span class="string">'categoricals'</span>, Pipeline([</span><br><span class="line">            (<span class="string">'extract'</span>, ColumnExtractor(CAT_FEATS)),</span><br><span class="line">            (<span class="string">'dummy'</span>, DummyTransformer())</span><br><span class="line">        ])),</span><br><span class="line">        (<span class="string">'numerics'</span>, Pipeline([</span><br><span class="line">            (<span class="string">'extract'</span>, ColumnExtractor(NUM_FEATS)),</span><br><span class="line">            (<span class="string">'zero_fill'</span>, ZeroFillTransformer()),</span><br><span class="line">            (<span class="string">'log'</span>, Log1pTransformer())</span><br><span class="line">        ]))</span><br><span class="line">    ]))</span><br><span class="line"><span class="comment">#     ('scale', DFStandardScaler())</span></span><br><span class="line">])</span><br><span class="line">pipeline.fit(df_train)</span><br><span class="line">X_train_2 = pipeline.transform(df_train)</span><br><span class="line">X_test_2 = pipeline.transform(df_test)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># fit model</span></span><br><span class="line">model_2 = LogisticRegression(random_state=<span class="number">5678</span>)</span><br><span class="line">model_2.fit(X_train_2, y_train)</span><br><span class="line">y_pred_train_2 = model_2.predict(X_train_2)</span><br><span class="line">p_pred_train_2 = model_2.predict_proba(X_train_2)[:, <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Evaluate model</span></span><br><span class="line">p_pred_test_2 = model_2.predict_proba(X_test_2)[:, <span class="number">1</span>]</span><br><span class="line">auc_test_2 = roc_auc_score(y_test, p_pred_test_2)</span><br><span class="line">print(auc_test_2)  <span class="comment"># 0.705084745763</span></span><br></pre></td></tr></table></figure>
+<pre><code>0.737853107345
+</code></pre><hr>
+<p>附錄：</p>
+<p>投影片One hot encoding的作法（可以比較一下<code>get_dummies</code>）</p>
+<p><strong>目的</strong></p>
+<ul>
+<li>turn string column into dummy variables</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DummyTransformer</span><span class="params">(TransformerMixin)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.dv = <span class="keyword">None</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">fit</span><span class="params">(self, X, y=None)</span>:</span></span><br><span class="line">        <span class="comment"># assumes all columns of X are strings</span></span><br><span class="line">        Xdict = X.to_dict(<span class="string">'records'</span>)</span><br><span class="line">        self.dv = DictVectorizer(sparse=<span class="keyword">False</span>)</span><br><span class="line">        self.dv.fit(Xdict)</span><br><span class="line">        <span class="keyword">return</span> self</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">transform</span><span class="params">(self, X)</span>:</span></span><br><span class="line">        <span class="comment"># assumes X is a DataFrame</span></span><br><span class="line">        Xdict = X.to_dict(<span class="string">'records'</span>)</span><br><span class="line">        Xt = self.dv.transform(Xdict)</span><br><span class="line">        cols = self.dv.get_feature_names()</span><br><span class="line">        Xdum = pd.DataFrame(Xt, index=X.index, columns=cols)</span><br><span class="line">        <span class="comment"># drop column indicating NaNs</span></span><br><span class="line">        nan_cols = [c <span class="keyword">for</span> c <span class="keyword">in</span> cols <span class="keyword">if</span> <span class="string">'='</span> <span class="keyword">not</span> <span class="keyword">in</span> c]</span><br><span class="line">        Xdum = Xdum.drop(nan_cols, axis=<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">return</span> Xdum</span><br></pre></td></tr></table></figure>
+<p>what <code>DictVectorizer</code> do</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.feature_extraction <span class="keyword">import</span> DictVectorizer</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">v = DictVectorizer(sparse=<span class="keyword">False</span>)</span><br><span class="line">D = [&#123;<span class="string">'foo'</span>:<span class="number">1</span>,<span class="string">'bar'</span>:<span class="number">2</span>&#125;,&#123;<span class="string">'foo'</span>:<span class="number">3</span>,<span class="string">'baz'</span>:<span class="number">1</span>&#125;]</span><br><span class="line">Xt = v.fit_transform(D)</span><br><span class="line">Xt</span><br></pre></td></tr></table></figure>
+<pre><code>array([[ 2.,  0.,  1.],
+       [ 0.,  1.,  3.]])
+</code></pre><p>useage:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CAT_FEATS = [</span><br><span class="line">    <span class="string">'permit_type'</span>, <span class="string">'event_category'</span>, <span class="string">'event_sub_category'</span>,</span><br><span class="line">    <span class="string">'event_location_park'</span>, <span class="string">'event_location_neighborhood'</span></span><br><span class="line">]</span><br><span class="line">cat_df = df_train[CAT_FEATS]</span><br><span class="line">cat_df.head()</span><br></pre></td></tr></table></figure>
+<img src="/2018/04/04/Pipeline-Transformer/img/out46_df.png">
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">v = DictVectorizer(sparse=<span class="keyword">False</span>)</span><br><span class="line">D = test_df.to_dict(<span class="string">'records'</span>)</span><br><span class="line">Xt = v.fit(D)</span><br><span class="line">Xt = v.fit_transform(D)</span><br><span class="line">Xt</span><br></pre></td></tr></table></figure>
+<pre><code>array([[  1.,   0.,   0.,   0.,   1.,   0.,   0.,   1.,   0.,   1.,   1.],
+       [  0.,   1.,   0.,   1.,   0.,   0.,  nan,   0.,  nan,   0.,   1.],
+       [  0.,   0.,   1.,   0.,   0.,   1.,  nan,   0.,  nan,   0.,   1.],
+       [  0.,   0.,   1.,   0.,   0.,   1.,  nan,   0.,  nan,   0.,   1.],
+       [  0.,   0.,   1.,   0.,   0.,   1.,  nan,   0.,  nan,   0.,   1.]])
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">D1 = [&#123;<span class="string">'event_category'</span>:<span class="string">'Athletic'</span>,<span class="string">'event_sub_category'</span>:<span class="string">'Run/Walk'</span>&#125;]</span><br><span class="line">v.transform(D1)</span><br></pre></td></tr></table></figure>
+<pre><code>array([[ 1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  0.]])
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dummy2 = DummyTransformer()</span><br><span class="line">dummy2.fit(test_df)</span><br><span class="line">dummy2.transform(test_df).head()</span><br></pre></td></tr></table></figure>
+<img src="/2018/04/04/Pipeline-Transformer/img/out49_df.png">
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pd.get_dummies(test_df)</span><br></pre></td></tr></table></figure>
+<img src="/2018/04/04/Pipeline-Transformer/img/out50_df.png">
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/pipeline/" rel="tag"># pipeline</a>
+          
+            <a href="/tags/transformer/" rel="tag"># transformer</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/28/HowToWinKaggle/" rel="next" title="How To Win A Data Science Competiton / Predict Future Sales">
+                <i class="fa fa-chevron-left"></i> How To Win A Data Science Competiton / Predict Future Sales
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">喵喵抄人</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Pipeline-amp-Transformer"><span class="nav-number">1.</span> <span class="nav-text">Pipeline &amp; Transformer</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#範例"><span class="nav-number">2.</span> <span class="nav-text">範例</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Transformers"><span class="nav-number">3.</span> <span class="nav-text">Transformers</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Transformer-in-Parallel"><span class="nav-number">3.1.</span> <span class="nav-text">Transformer in Parallel</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#eda"><span class="nav-number">3.2.</span> <span class="nav-text">eda</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#如果我要的功能沒有在sklearn裡面的transformer怎麼辦？"><span class="nav-number">3.2.1.</span> <span class="nav-text">如果我要的功能沒有在sklearn裡面的transformer怎麼辦？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#客製化-Transformer"><span class="nav-number">4.</span> <span class="nav-text">客製化 Transformer</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#One-Hot-Encoding"><span class="nav-number">4.1.</span> <span class="nav-text">One Hot Encoding</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DateFormatter"><span class="nav-number">4.2.</span> <span class="nav-text">DateFormatter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Clip-transformer"><span class="nav-number">4.3.</span> <span class="nav-text">Clip transformer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Column-Extractor"><span class="nav-number">4.4.</span> <span class="nav-text">Column Extractor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#data-frame-版本的-FeatureUnion"><span class="nav-number">4.5.</span> <span class="nav-text">data frame 版本的 FeatureUnion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#補零"><span class="nav-number">4.6.</span> <span class="nav-text">補零</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#data-frame-版本的-StandardScaler"><span class="nav-number">4.7.</span> <span class="nav-text">data frame 版本的 StandardScaler</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#組合成-pipeline"><span class="nav-number">5.</span> <span class="nav-text">組合成 pipeline</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">喵喵抄人</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://ihong-1.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2018/04/04/Pipeline-Transformer/';
+          this.page.identifier = '2018/04/04/Pipeline-Transformer/';
+          this.page.title = 'Pipeline＆Transformer';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://ihong-1.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
